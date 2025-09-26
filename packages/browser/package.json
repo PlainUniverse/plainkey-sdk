@@ -1,0 +1,26 @@
+{
+    "name": "@plainkey/ts-frontend",
+    "version": "0.1.0",
+    "description": "PlainKey TypeScript frontend SDK",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs"
+        }
+    },
+    "sideEffects": false,
+    "scripts": {
+        "build": "tsup src/index.ts --format esm --dts --sourcemap --clean",
+        "test": "vitest",
+        "prepublishOnly": "npm run build"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@plainkey/shared-types": "file:../shared-types",
+        "@simplewebauthn/browser": "^13.2.0"
+    }
+}
