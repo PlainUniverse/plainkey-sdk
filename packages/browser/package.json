@@ -1,5 +1,5 @@
 {
-    "name": "@plainkey/ts-frontend",
+    "name": "@plainkey/browser",
     "version": "0.1.0",
     "description": "PlainKey TypeScript frontend SDK",
     "module": "dist/index.mjs",
