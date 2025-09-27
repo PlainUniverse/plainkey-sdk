@@ -17,13 +17,12 @@ export type ErrorResponse = {
 }
 
 export type usePlainKeyParams = {
-  // The client ID tied to the project.
-  clientId: string
+  projectId: string
 }
 
 export function usePlainKey(usePlainKeyParams: usePlainKeyParams) {
-  const { clientId } = usePlainKeyParams
-  const plainKeyClient = new PlainKeyClient({ clientId })
+  const { projectId } = usePlainKeyParams
+  const plainKeyClient = new PlainKeyClient({ projectId })
 
   // Registration (user creation + passkey registration)
   const isRegistering = ref(false)

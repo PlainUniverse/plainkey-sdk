@@ -3,8 +3,8 @@ import { startAuthentication, startRegistration } from "@simplewebauthn/browser"
 //#region src/plainkey-client.ts
 var PlainKeyClient = class {
 	constructor(clientParams) {
-		const { clientId, baseUrl = "https://api.plainkey.io" } = clientParams;
-		this.clientId = clientId;
+		const { projectId, baseUrl = "https://api.plainkey.io" } = clientParams;
+		this.projectId = projectId;
 		this.baseUrl = baseUrl.replace(/\/$/, "");
 	}
 	/**
@@ -14,7 +14,7 @@ var PlainKeyClient = class {
 	async Registration(beginParams) {
 		const headers = new Headers({
 			"Content-Type": "application/json",
-			"client-id": this.clientId
+			"x-project-id": this.projectId
 		});
 		const beginResponse = await fetch(`${this.baseUrl}/user/register/begin`, {
 			method: "POST",
@@ -36,7 +36,7 @@ var PlainKeyClient = class {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
-				"client-id": this.clientId
+				"x-project-id": this.projectId
 			},
 			credentials: "include",
 			body: JSON.stringify(completeParams)
@@ -56,7 +56,7 @@ var PlainKeyClient = class {
 	async AddCredential(beginParams) {
 		const headers = new Headers({
 			"Content-Type": "application/json",
-			"client-id": this.clientId
+			"x-project-id": this.projectId
 		});
 		const beginResponse = await fetch(`${this.baseUrl}/user/credential/begin`, {
 			method: "POST",
@@ -78,7 +78,7 @@ var PlainKeyClient = class {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
-				"client-id": this.clientId
+				"x-project-id": this.projectId
 			},
 			credentials: "include",
 			body: JSON.stringify(completeParams)
@@ -99,7 +99,7 @@ var PlainKeyClient = class {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
-				"client-id": this.clientId
+				"x-project-id": this.projectId
 			},
 			credentials: "include",
 			body: JSON.stringify(beginParams)
@@ -117,7 +117,7 @@ var PlainKeyClient = class {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
-				"client-id": this.clientId
+				"x-project-id": this.projectId
 			},
 			credentials: "include",
 			body: JSON.stringify(completeParams)

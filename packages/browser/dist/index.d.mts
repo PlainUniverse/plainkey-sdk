@@ -74,11 +74,11 @@ type LoginCompleteResponse = {
 //#endregion
 //#region src/plainkey-client.d.ts
 type PlainKeyClientParams = {
-  clientId: string;
+  projectId: string;
   baseUrl?: string;
 };
 declare class PlainKeyClient {
-  private readonly clientId;
+  private readonly projectId;
   private readonly baseUrl;
   constructor(clientParams: PlainKeyClientParams);
   /**

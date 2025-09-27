@@ -1,32 +1,32 @@
 {
-    "name": "@plainkey/browser",
-    "version": "0.1.0",
-    "description": "PlainKey TypeScript browser SDK",
-    "module": "dist/index.mjs",
-    "types": "dist/index.d.mts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.mts",
-            "import": "./dist/index.mjs"
-        }
-    },
-    "sideEffects": false,
-    "files": [
-        "dist"
-    ],
-    "scripts": {
-        "build": "tsdown src/index.ts --format esm --dts --sourcemap --clean",
-        "test": "vitest",
-        "prepublishOnly": "npm run build"
-    },
-    "publishConfig": {
-        "access": "public"
-    },
-    "dependencies": {
-        "@plainkey/types": "*",
-        "@simplewebauthn/browser": "^13.2.0"
-    },
-    "devDependencies": {
-        "tsdown": "^0.15.5"
+  "name": "@plainkey/browser",
+  "version": "0.2.0",
+  "description": "PlainKey TypeScript browser SDK",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
     }
+  },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown src/index.ts --format esm --dts --sourcemap --clean",
+    "test": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@plainkey/types": "*",
+    "@simplewebauthn/browser": "^13.2.0"
+  },
+  "devDependencies": {
+    "tsdown": "^0.15.5"
+  }
 }

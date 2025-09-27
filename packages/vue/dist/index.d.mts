@@ -6,7 +6,7 @@ type ErrorResponse = {
   error: string;
 };
 type usePlainKeyParams = {
-  clientId: string;
+  projectId: string;
 };
 declare function usePlainKey(usePlainKeyParams: usePlainKeyParams): {
   register: (beginParams: RegistrationBeginRequest) => Promise<RegistrationCompleteResponse | ErrorResponse>;

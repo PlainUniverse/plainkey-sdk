@@ -21,22 +21,19 @@ import type {
 } from "./types/responses"
 
 export type PlainKeyClientParams = {
-  // The client ID tied to the project.
-  clientId: string
-
-  // The base URL of the PlainKey API.
+  projectId: string
   baseUrl?: string
 }
 
 // TODO: Account for errors like this: "Unexpected token 'R', "Response v"... is not valid JSON"
 export class PlainKeyClient {
-  private readonly clientId: string
+  private readonly projectId: string
   private readonly baseUrl: string
 
   constructor(clientParams: PlainKeyClientParams) {
-    const { clientId, baseUrl = "https://api.plainkey.io" } = clientParams
+    const { projectId, baseUrl = "https://api.plainkey.io" } = clientParams
 
-    this.clientId = clientId
+    this.projectId = projectId
     this.baseUrl = baseUrl.replace(/\/$/, "") // Remove trailing slash
   }
 
@@ -48,7 +45,7 @@ export class PlainKeyClient {
     // Step 1: Get registration options from server
     const headers = new Headers({
       "Content-Type": "application/json",
-      "client-id": this.clientId
+      "x-project-id": this.projectId
     })
 
     const beginResponse = await fetch(`${this.baseUrl}/user/register/begin`, {
@@ -80,7 +77,7 @@ export class PlainKeyClient {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "client-id": this.clientId
+        "x-project-id": this.projectId
       },
       credentials: "include",
       body: JSON.stringify(completeParams)
@@ -108,7 +105,7 @@ export class PlainKeyClient {
     // Step 1: Get credential registration options from server
     const headers = new Headers({
       "Content-Type": "application/json",
-      "client-id": this.clientId
+      "x-project-id": this.projectId
     })
 
     const beginResponse = await fetch(`${this.baseUrl}/user/credential/begin`, {
@@ -140,7 +137,7 @@ export class PlainKeyClient {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "client-id": this.clientId
+        "x-project-id": this.projectId
       },
       credentials: "include",
       body: JSON.stringify(completeParams)
@@ -167,7 +164,7 @@ export class PlainKeyClient {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "client-id": this.clientId
+        "x-project-id": this.projectId
       },
       credentials: "include",
       body: JSON.stringify(beginParams)
@@ -199,7 +196,7 @@ export class PlainKeyClient {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "client-id": this.clientId
+        "x-project-id": this.projectId
       },
       credentials: "include",
       body: JSON.stringify(completeParams)
