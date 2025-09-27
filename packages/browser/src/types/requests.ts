@@ -1,4 +1,4 @@
-import type { UserIdentifier } from "@plainkey/shared-types"
+import { UserIdentifier } from "@plainkey/types"
 import { RegistrationResponseJSON, AuthenticationResponseJSON } from "@simplewebauthn/browser"
 
 // User Registration (creates new user + adds passkey)

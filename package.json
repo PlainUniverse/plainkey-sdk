@@ -4,11 +4,19 @@
   "version": "0.1.0",
   "description": "Plainkey SDK for TypeScript, including frontend and backend",
   "workspaces": [
-    "packages/*"
+    "packages/types",
+    "packages/browser",
+    "packages/server",
+    "packages/vue"
   ],
   "scripts": {
-    "build": "npm run build --workspaces",
-    "test": "npm run test --workspaces"
+    "build:types": "npm run build -w @plainkey/types",
+    "build:browser": "npm run build -w @plainkey/browser",
+    "build:server": "npm run build -w @plainkey/server",
+    "build:vue": "npm run build -w @plainkey/vue",
+    "build": "npm run build:types && npm run build:browser && npm run build:server && npm run build:vue",
+    "test": "npm run test --workspaces",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@eslint/css": "^0.11.1",
@@ -18,9 +26,11 @@
     "@types/node": "^24.5.2",
     "eslint": "^9.36.0",
     "prettier": "^3.6.2",
-    "tsup": "^8.5.0",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.44.1",
     "vitest": "^3.2.4"
+  },
+  "devDependencies": {
+    "tsdown": "^0.15.5"
   }
 }

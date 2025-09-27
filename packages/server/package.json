@@ -1,12 +1,12 @@
 {
-    "name": "@plainkey/browser",
+    "name": "@plainkey/server",
     "version": "0.1.0",
-    "description": "PlainKey TypeScript browser SDK",
+    "description": "PlainKey TypeScript server SDK",
     "module": "dist/index.mjs",
-    "types": "dist/index.d.mts",
+    "types": "dist/index.d.ts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.mts",
+            "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs"
         }
     },
@@ -24,7 +24,7 @@
     },
     "dependencies": {
         "@plainkey/types": "*",
-        "@simplewebauthn/browser": "^13.2.0"
+        "@simplewebauthn/server": "^13.2.1"
     },
     "devDependencies": {
         "tsdown": "^0.15.5"

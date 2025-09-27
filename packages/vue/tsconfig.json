@@ -11,8 +11,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "dist",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "types": []
+    "lib": ["ES2020"]
   },
   "include": ["src"]
 }

@@ -1,4 +1,4 @@
-import { PublicUser } from "@plainkey/shared-types"
+import { PublicUser } from "@plainkey/types"
 import {
   PublicKeyCredentialCreationOptionsJSON,
   PublicKeyCredentialRequestOptionsJSON

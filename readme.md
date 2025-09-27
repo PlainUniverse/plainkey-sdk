@@ -4,10 +4,10 @@ TypeScript SDK for passwordless authentication using WebAuthn/passkeys.
 
 ## Packages
 
-- **`@plainkey/browser`** - JavaScript/TypeScript Browser SDK for client-side WebAuthn operations
-- **`@plainkey/shared-types`** - Shared TypeScript types
-- **`server`** - JavaScript/TypeScript Server SDK (coming soon)
-- **`vue`** - Vue.js components (coming soon)
+- **`@plainkey/browser`** - JavaScript/TypeScript Browser SDK for client-side login and registration
+- **`@plainkey/server`** - JavaScript/TypeScript Server SDK for server-side-only operations (coming soon)
+- **`@plainkey/shared-types`** - Shared TypeScript types across packages
+- **`@plainkey/vue`** - Vue.js components (coming soon)
 
 ## Browser Package
 
