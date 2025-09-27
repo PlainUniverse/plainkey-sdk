@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "plainkey-sdk",
+  "name": "plainkey",
   "version": "0.1.0",
   "description": "Plainkey SDK for TypeScript, including frontend and backend",
   "workspaces": [
