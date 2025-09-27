@@ -1,16 +1,16 @@
 import { Ref, ref } from "vue"
 import { PlainKeyClient } from "@plainkey/browser"
-import {
+import type {
   RegistrationCompleteResponse,
   UserCredentialCompleteResponse,
   LoginCompleteResponse
-} from "@plainkey/browser/"
+} from "@plainkey/types/"
 
-import {
+import type {
   LoginBeginRequest,
   RegistrationBeginRequest,
   UserCredentialBeginRequest
-} from "@plainkey/browser/"
+} from "@plainkey/types/"
 
 export type ErrorResponse = {
   error: string

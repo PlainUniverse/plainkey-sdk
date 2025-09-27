@@ -1,23 +1,23 @@
 {
-    "name": "@plainkey/types",
-    "version": "0.1.0",
-    "main": "dist/index.js",
-    "module": "dist/index.mjs",
-    "types": "dist/index.d.mts",
-    "files": [
-        "dist"
-    ],
-    "scripts": {
-        "build": "tsdown src/index.ts --format esm --dts --clean",
-        "prepare": "npm run build"
-    },
-    "publishConfig": {
-        "access": "public"
-    },
-    "dependencies": {
-        "@simplewebauthn/browser": "^13.2.0"
-    },
-    "devDependencies": {
-        "tsdown": "^0.15.5"
-    }
+  "name": "@plainkey/types",
+  "version": "0.2.0",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown src/index.ts --format esm --dts --clean",
+    "prepare": "npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@simplewebauthn/browser": "^13.2.0"
+  },
+  "devDependencies": {
+    "tsdown": "^0.15.5"
+  }
 }

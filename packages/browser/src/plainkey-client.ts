@@ -8,7 +8,7 @@ import type {
   UserCredentialCompleteRequest,
   LoginBeginRequest,
   LoginCompleteRequest
-} from "./types/requests"
+} from "@plainkey/types"
 
 import type {
   RegistrationBeginResponse,
@@ -18,7 +18,7 @@ import type {
   LoginBeginResponse,
   LoginCompleteResponse,
   ErrorResponse
-} from "./types/responses"
+} from "@plainkey/types"
 
 export type PlainKeyClientParams = {
   projectId: string

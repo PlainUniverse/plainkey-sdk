@@ -1,4 +1,4 @@
-import { UserIdentifier } from "@plainkey/types"
+import { UserIdentifier } from "../common"
 import { RegistrationResponseJSON, AuthenticationResponseJSON } from "@simplewebauthn/browser"
 
 // User Registration (creates new user + adds passkey)
@@ -30,3 +30,6 @@ export type LoginBeginRequest = {
 export type LoginCompleteRequest = {
   authenticationResponse: AuthenticationResponseJSON
 }
+
+// Export from @simplewebauthn/browser
+export { RegistrationResponseJSON, AuthenticationResponseJSON } from "@simplewebauthn/browser"
