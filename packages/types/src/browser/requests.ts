@@ -4,7 +4,6 @@ import { RegistrationResponseJSON, AuthenticationResponseJSON } from "@simpleweb
 // User Registration (creates new user + adds passkey)
 export type RegistrationBeginRequest = {
   userName?: string
-  userMetadata?: Record<string, unknown>
 }
 
 export type RegistrationCompleteRequest = {

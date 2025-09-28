@@ -6,5 +6,4 @@ export type UserIdentifier = {
 export type PublicUser = {
   id: string
   userName?: string
-  metadata?: Record<string, unknown>
 }
