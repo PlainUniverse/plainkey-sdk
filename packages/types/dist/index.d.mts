@@ -8,13 +8,11 @@ type UserIdentifier = {
 type PublicUser = {
   id: string;
   userName?: string;
-  metadata?: Record<string, unknown>;
 };
 //#endregion
 //#region src/browser/requests.d.ts
 type RegistrationBeginRequest = {
   userName?: string;
-  userMetadata?: Record<string, unknown>;
 };
 type RegistrationCompleteRequest = {
   userIdentifier: UserIdentifier;

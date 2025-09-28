@@ -13,24 +13,18 @@ declare function usePlainKey(usePlainKeyParams: usePlainKeyParams): {
   isRegistering: Ref<boolean, boolean>;
   error: Ref<string | null, string | null>;
   registerSuccess: Ref<boolean, boolean>;
-  registeredCredential: Ref<{
-    id: string;
-    webAuthnId: string;
-  } | null, {
-    id: string;
-    webAuthnId: string;
-  } | null>;
-  registeredResponse: Ref<RegistrationCompleteResponse | null, RegistrationCompleteResponse | null>;
+  registeredCredential: Ref<any, any>;
+  registeredResponse: Ref<any, any>;
   addCredential: (beginParams: UserCredentialBeginRequest) => Promise<UserCredentialCompleteResponse | ErrorResponse>;
   isAddingCredential: Ref<boolean, boolean>;
   addCredentialError: Ref<string | null, string | null>;
   addCredentialSuccess: Ref<boolean, boolean>;
-  addedCredentialResponse: Ref<UserCredentialCompleteResponse | null, UserCredentialCompleteResponse | null>;
+  addedCredentialResponse: Ref<any, any>;
   login: (beginParams: LoginBeginRequest) => Promise<LoginCompleteResponse>;
   isLoggingIn: Ref<boolean, boolean>;
   loginError: Ref<string | null, string | null>;
   loginSuccess: Ref<boolean, boolean>;
-  loggedInResponse: Ref<LoginCompleteResponse | null, LoginCompleteResponse | null>;
+  loggedInResponse: Ref<any, any>;
 };
 //#endregion
 export { ErrorResponse, usePlainKey, usePlainKeyParams };

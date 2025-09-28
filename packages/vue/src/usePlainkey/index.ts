@@ -1,5 +1,5 @@
 import { Ref, ref } from "vue"
-import { PlainKeyClient } from "@plainkey/browser"
+import { PlainKeyClient } from "@plainkey/browser/"
 import type {
   RegistrationCompleteResponse,
   UserCredentialCompleteResponse,
