@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { PlainKeyClient } from "@plainkey/browser/";
+import { PlainKeyClient } from "@plainkey/browser";
 
 //#region src/usePlainkey/index.ts
 function usePlainKey(usePlainKeyParams) {
