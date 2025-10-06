@@ -3,7 +3,7 @@ import { startAuthentication, startRegistration } from "@simplewebauthn/browser"
 //#region src/plainkey-client.ts
 var PlainKeyClient = class {
 	constructor(clientParams) {
-		const { projectId, baseUrl = "https://api.plainkey.io" } = clientParams;
+		const { projectId, baseUrl = "https://api.plainkey.io/api" } = clientParams;
 		this.projectId = projectId;
 		this.baseUrl = baseUrl.replace(/\/$/, "");
 	}

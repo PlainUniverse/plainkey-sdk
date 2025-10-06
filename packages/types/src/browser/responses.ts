@@ -9,24 +9,29 @@ export type ErrorResponse = {
   error: string
 }
 
+// Session/Token
+export type IssuedToken = {
+  token: string
+  expiresInSeconds: number
+  tokenType: string
+}
+
+export type IssuedSession = {
+  sessionId: string
+  refreshToken: string
+}
+
 // User Registration
 export type RegistrationBeginResponse = {
   user: PublicUser
   options: PublicKeyCredentialCreationOptionsJSON
 }
 
-export type IssuedSession = {
-  sessionId: string
-  token: string
-  expiresInSeconds: number
-  tokenType: string
-  refreshToken: string
-}
-
 export type RegistrationCompleteResponse = {
   success: boolean
   user: PublicUser
-  token: IssuedSession
+  token: IssuedToken
+  session?: IssuedSession
   credential: {
     id: string
     webAuthnId: string
@@ -42,7 +47,8 @@ export type UserCredentialBeginResponse = {
 export type UserCredentialCompleteResponse = {
   success: boolean
   user: PublicUser
-  token: IssuedSession
+  token: IssuedToken
+  session?: IssuedSession
   credential: {
     id: string
     webAuthnId: string
@@ -59,7 +65,8 @@ export type LoginBeginResponse = {
 export type LoginCompleteResponse = {
   verified: boolean
   user: PublicUser
-  token: IssuedSession
+  token: IssuedToken
+  session?: IssuedSession
 }
 
 // Export from @simplewebauthn/browser

@@ -31,7 +31,7 @@ export class PlainKeyClient {
   private readonly baseUrl: string
 
   constructor(clientParams: PlainKeyClientParams) {
-    const { projectId, baseUrl = "https://api.plainkey.io" } = clientParams
+    const { projectId, baseUrl = "https://api.plainkey.io/api" } = clientParams
 
     this.projectId = projectId
     this.baseUrl = baseUrl.replace(/\/$/, "") // Remove trailing slash

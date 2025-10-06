@@ -36,21 +36,24 @@ type LoginCompleteRequest = {
 type ErrorResponse = {
   error: string;
 };
+type IssuedToken = {
+  token: string;
+  expiresInSeconds: number;
+  tokenType: string;
+};
+type IssuedSession = {
+  sessionId: string;
+  refreshToken: string;
+};
 type RegistrationBeginResponse = {
   user: PublicUser;
   options: PublicKeyCredentialCreationOptionsJSON$1;
 };
-type IssuedSession = {
-  sessionId: string;
-  token: string;
-  expiresInSeconds: number;
-  tokenType: string;
-  refreshToken: string;
-};
 type RegistrationCompleteResponse = {
   success: boolean;
   user: PublicUser;
-  token: IssuedSession;
+  token: IssuedToken;
+  session?: IssuedSession;
   credential: {
     id: string;
     webAuthnId: string;
@@ -63,7 +66,8 @@ type UserCredentialBeginResponse = {
 type UserCredentialCompleteResponse = {
   success: boolean;
   user: PublicUser;
-  token: IssuedSession;
+  token: IssuedToken;
+  session?: IssuedSession;
   credential: {
     id: string;
     webAuthnId: string;
@@ -77,8 +81,9 @@ type LoginBeginResponse = {
 type LoginCompleteResponse = {
   verified: boolean;
   user: PublicUser;
-  token: IssuedSession;
+  token: IssuedToken;
+  session?: IssuedSession;
 };
 //#endregion
-export { AuthenticationResponseJSON, ErrorResponse, IssuedSession, LoginBeginRequest, LoginBeginResponse, LoginCompleteRequest, LoginCompleteResponse, PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON, PublicUser, RegistrationBeginRequest, RegistrationBeginResponse, RegistrationCompleteRequest, RegistrationCompleteResponse, RegistrationResponseJSON, UserCredentialBeginRequest, UserCredentialBeginResponse, UserCredentialCompleteRequest, UserCredentialCompleteResponse, UserIdentifier };
+export { AuthenticationResponseJSON, ErrorResponse, IssuedSession, IssuedToken, LoginBeginRequest, LoginBeginResponse, LoginCompleteRequest, LoginCompleteResponse, PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON, PublicUser, RegistrationBeginRequest, RegistrationBeginResponse, RegistrationCompleteRequest, RegistrationCompleteResponse, RegistrationResponseJSON, UserCredentialBeginRequest, UserCredentialBeginResponse, UserCredentialCompleteRequest, UserCredentialCompleteResponse, UserIdentifier };
 //# sourceMappingURL=index.d.mts.map

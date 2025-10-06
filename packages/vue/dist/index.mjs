@@ -69,12 +69,11 @@ function usePlainKey(usePlainKeyParams) {
 				verified: false,
 				user: { id: "" },
 				token: {
-					sessionId: "",
 					token: "",
 					expiresInSeconds: 0,
-					tokenType: "",
-					refreshToken: ""
-				}
+					tokenType: ""
+				},
+				session: void 0
 			};
 		} finally {
 			isLoggingIn.value = false;

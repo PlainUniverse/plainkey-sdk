@@ -108,7 +108,8 @@ export function usePlainKey(usePlainKeyParams: usePlainKeyParams) {
       return {
         verified: false,
         user: { id: "" },
-        token: { sessionId: "", token: "", expiresInSeconds: 0, tokenType: "", refreshToken: "" }
+        token: { token: "", expiresInSeconds: 0, tokenType: "" },
+        session: undefined
       }
     } finally {
       isLoggingIn.value = false
