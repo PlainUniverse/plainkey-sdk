@@ -1,5 +1,5 @@
 import { PublicUser } from "../common"
-import {
+import type {
   PublicKeyCredentialCreationOptionsJSON,
   PublicKeyCredentialRequestOptionsJSON
 } from "@simplewebauthn/browser"
@@ -69,8 +69,8 @@ export type LoginCompleteResponse = {
   session?: IssuedSession
 }
 
-// Export from @simplewebauthn/browser
-export {
+// Re-export types for consumers
+export type {
   PublicKeyCredentialCreationOptionsJSON,
   PublicKeyCredentialRequestOptionsJSON
 } from "@simplewebauthn/browser"

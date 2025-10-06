@@ -1,5 +1,5 @@
 import { UserIdentifier } from "../common"
-import { RegistrationResponseJSON, AuthenticationResponseJSON } from "@simplewebauthn/browser"
+import type { RegistrationResponseJSON, AuthenticationResponseJSON } from "@simplewebauthn/browser"
 
 // User Registration (creates new user + adds passkey)
 export type RegistrationBeginRequest = {
@@ -30,5 +30,5 @@ export type LoginCompleteRequest = {
   authenticationResponse: AuthenticationResponseJSON
 }
 
-// Export from @simplewebauthn/browser
-export { RegistrationResponseJSON, AuthenticationResponseJSON } from "@simplewebauthn/browser"
+// Re-export types for consumers
+export type { RegistrationResponseJSON, AuthenticationResponseJSON } from "@simplewebauthn/browser"
