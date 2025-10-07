@@ -22,7 +22,7 @@ export type usePlainKeyParams = {
 }
 
 export type LoginParams = {
-  userIdentifier: UserIdentifier
+  userIdentifier?: UserIdentifier
 }
 
 export type AddCredentialParams = {
