@@ -16,7 +16,8 @@ declare class PlainKeyClient {
   Registration(beginParams: RegistrationBeginRequest): Promise<RegistrationCompleteResponse>;
   /**
    * Add credential to existing user.
-   * Requires valid user authentication token (log user in first which will set a user token cookie, then call this).
+   * Requires a valid user authentication token passed in beginParams, which will be sent in the request body.
+   * However, do not store the token in local storage, database, etc. Always keep it in memory.
    */
   AddCredential(beginParams: UserCredentialBeginRequest): Promise<UserCredentialCompleteResponse>;
   /**

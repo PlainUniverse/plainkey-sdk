@@ -43,15 +43,9 @@ export class PlainKeyClient {
    */
   async Registration(beginParams: RegistrationBeginRequest): Promise<RegistrationCompleteResponse> {
     // Step 1: Get registration options from server
-    const headers = new Headers({
-      "Content-Type": "application/json",
-      "x-project-id": this.projectId
-    })
-
     const beginResponse = await fetch(`${this.baseUrl}/user/register/begin`, {
       method: "POST",
-      headers,
-      credentials: "include",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(beginParams)
     })
 
@@ -69,17 +63,14 @@ export class PlainKeyClient {
 
     // Step 3: Send credential to server for verification
     const completeParams: RegistrationCompleteRequest = {
+      projectId: this.projectId,
       userIdentifier: { userId: user.id },
       credential
     }
 
     const completeResponse = await fetch(`${this.baseUrl}/user/register/complete`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-project-id": this.projectId
-      },
-      credentials: "include",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(completeParams)
     })
 
@@ -97,21 +88,17 @@ export class PlainKeyClient {
 
   /**
    * Add credential to existing user.
-   * Requires valid user authentication token (log user in first which will set a user token cookie, then call this).
+   * Requires a valid user authentication token passed in beginParams, which will be sent in the request body.
+   * However, do not store the token in local storage, database, etc. Always keep it in memory.
    */
   async AddCredential(
     beginParams: UserCredentialBeginRequest
   ): Promise<UserCredentialCompleteResponse> {
     // Step 1: Get credential registration options from server
-    const headers = new Headers({
-      "Content-Type": "application/json",
-      "x-project-id": this.projectId
-    })
 
     const beginResponse = await fetch(`${this.baseUrl}/user/credential/begin`, {
       method: "POST",
-      headers,
-      credentials: "include",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(beginParams)
     })
 
@@ -135,11 +122,7 @@ export class PlainKeyClient {
 
     const completeResponse = await fetch(`${this.baseUrl}/user/credential/complete`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-project-id": this.projectId
-      },
-      credentials: "include",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(completeParams)
     })
 
@@ -162,11 +145,7 @@ export class PlainKeyClient {
     // Step 1: Get authentication options from server
     const beginResponse = await fetch(`${this.baseUrl}/login/begin`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-project-id": this.projectId
-      },
-      credentials: "include",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(beginParams)
     })
 
@@ -190,15 +169,17 @@ export class PlainKeyClient {
     }
 
     // Step 3: POST the response to the server
-    const completeParams: LoginCompleteRequest = { authenticationResponse }
+    // This uses the login session ID from the begin response - always in JS memory.
+    // Do not store it in local storage, database, etc.
+    const completeParams: LoginCompleteRequest = {
+      projectId: this.projectId,
+      loginSessionId: beginResponseData.loginSession.id,
+      authenticationResponse
+    }
 
     const verificationResponse = await fetch(`${this.baseUrl}/login/complete`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-project-id": this.projectId
-      },
-      credentials: "include",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(completeParams)
     })
 

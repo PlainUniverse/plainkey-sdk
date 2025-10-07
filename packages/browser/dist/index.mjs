@@ -12,14 +12,9 @@ var PlainKeyClient = class {
 	* Creates a new user and adds a credential to it.
 	*/
 	async Registration(beginParams) {
-		const headers = new Headers({
-			"Content-Type": "application/json",
-			"x-project-id": this.projectId
-		});
 		const beginResponse = await fetch(`${this.baseUrl}/user/register/begin`, {
 			method: "POST",
-			headers,
-			credentials: "include",
+			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(beginParams)
 		});
 		if (!beginResponse.ok) {
@@ -29,16 +24,13 @@ var PlainKeyClient = class {
 		const { options, user } = await beginResponse.json();
 		const credential = await startRegistration({ optionsJSON: options });
 		const completeParams = {
+			projectId: this.projectId,
 			userIdentifier: { userId: user.id },
 			credential
 		};
 		const completeResponse = await fetch(`${this.baseUrl}/user/register/complete`, {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"x-project-id": this.projectId
-			},
-			credentials: "include",
+			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(completeParams)
 		});
 		if (!completeResponse.ok) {
@@ -51,17 +43,13 @@ var PlainKeyClient = class {
 	}
 	/**
 	* Add credential to existing user.
-	* Requires valid user authentication token (log user in first which will set a user token cookie, then call this).
+	* Requires a valid user authentication token passed in beginParams, which will be sent in the request body.
+	* However, do not store the token in local storage, database, etc. Always keep it in memory.
 	*/
 	async AddCredential(beginParams) {
-		const headers = new Headers({
-			"Content-Type": "application/json",
-			"x-project-id": this.projectId
-		});
 		const beginResponse = await fetch(`${this.baseUrl}/user/credential/begin`, {
 			method: "POST",
-			headers,
-			credentials: "include",
+			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(beginParams)
 		});
 		if (!beginResponse.ok) {
@@ -76,11 +64,7 @@ var PlainKeyClient = class {
 		};
 		const completeResponse = await fetch(`${this.baseUrl}/user/credential/complete`, {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"x-project-id": this.projectId
-			},
-			credentials: "include",
+			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(completeParams)
 		});
 		if (!completeResponse.ok) {
@@ -97,11 +81,7 @@ var PlainKeyClient = class {
 	async Login(beginParams) {
 		const beginResponse = await fetch(`${this.baseUrl}/login/begin`, {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"x-project-id": this.projectId
-			},
-			credentials: "include",
+			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(beginParams)
 		});
 		if (!beginResponse.ok) {
@@ -112,14 +92,14 @@ var PlainKeyClient = class {
 		if (!beginResponseData.options) throw new Error("No options found in login begin response");
 		const authenticationResponse = await startAuthentication({ optionsJSON: beginResponseData.options });
 		if (!authenticationResponse) throw new Error("No authentication response from browser");
-		const completeParams = { authenticationResponse };
+		const completeParams = {
+			projectId: this.projectId,
+			loginSessionId: beginResponseData.loginSession.id,
+			authenticationResponse
+		};
 		const verificationResponse = await fetch(`${this.baseUrl}/login/complete`, {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"x-project-id": this.projectId
-			},
-			credentials: "include",
+			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(completeParams)
 		});
 		if (!verificationResponse.ok) {

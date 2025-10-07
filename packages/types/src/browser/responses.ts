@@ -60,6 +60,10 @@ export type LoginBeginResponse = {
   projectId: string
   userId?: string
   options: PublicKeyCredentialRequestOptionsJSON
+  loginSession: {
+    id: string
+    expiresAt: string
+  }
 }
 
 export type LoginCompleteResponse = {

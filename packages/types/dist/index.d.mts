@@ -12,23 +12,32 @@ type PublicUser = {
 //#endregion
 //#region src/browser/requests.d.ts
 type RegistrationBeginRequest = {
+  projectId: string;
   userName?: string;
 };
 type RegistrationCompleteRequest = {
+  projectId: string;
   userIdentifier: UserIdentifier;
   credential: RegistrationResponseJSON$1;
 };
 type UserCredentialBeginRequest = {
+  projectId?: string;
+  userToken?: string;
   userIdentifier: UserIdentifier;
 };
 type UserCredentialCompleteRequest = {
+  projectId?: string;
+  userToken?: string;
   userIdentifier: UserIdentifier;
   credential: RegistrationResponseJSON$1;
 };
 type LoginBeginRequest = {
+  projectId: string;
   userIdentifier?: UserIdentifier;
 };
 type LoginCompleteRequest = {
+  projectId: string;
+  loginSessionId: string;
   authenticationResponse: AuthenticationResponseJSON$1;
 };
 //#endregion
@@ -77,6 +86,10 @@ type LoginBeginResponse = {
   projectId: string;
   userId?: string;
   options: PublicKeyCredentialRequestOptionsJSON$1;
+  loginSession: {
+    id: string;
+    expiresAt: string;
+  };
 };
 type LoginCompleteResponse = {
   verified: boolean;

@@ -67,6 +67,10 @@ export function usePlainKey(usePlainKeyParams: usePlainKeyParams) {
     }
   }
 
+  /**
+   * The user must be logged in first. Pass in their user token and project ID in beginParams.
+   * However, do not store the token in local storage, database, etc. Always keep it in memory.
+   */
   async function addCredential(
     beginParams: UserCredentialBeginRequest
   ): Promise<UserCredentialCompleteResponse | ErrorResponse> {
