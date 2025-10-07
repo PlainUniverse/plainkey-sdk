@@ -1,5 +1,5 @@
 import { Ref } from "vue";
-import { LoginBeginRequest, LoginCompleteResponse, RegistrationBeginRequest, RegistrationCompleteResponse, UserCredentialBeginRequest, UserCredentialCompleteResponse } from "@plainkey/types";
+import { LoginCompleteResponse, RegistrationCompleteResponse, UserCredentialCompleteResponse, UserIdentifier } from "@plainkey/types";
 
 //#region src/usePlainkey/index.d.ts
 type ErrorResponse = {
@@ -8,8 +8,18 @@ type ErrorResponse = {
 type usePlainKeyParams = {
   projectId: string;
 };
+type LoginParams = {
+  userIdentifier: UserIdentifier;
+};
+type AddCredentialParams = {
+  userIdentifier: UserIdentifier;
+  userToken: string;
+};
+type RegisterParams = {
+  userName?: string;
+};
 declare function usePlainKey(usePlainKeyParams: usePlainKeyParams): {
-  register: (beginParams: RegistrationBeginRequest) => Promise<RegistrationCompleteResponse | ErrorResponse>;
+  register: (registerParams: RegisterParams) => Promise<RegistrationCompleteResponse | ErrorResponse>;
   isRegistering: Ref<boolean, boolean>;
   error: Ref<string | null, string | null>;
   registerSuccess: Ref<boolean, boolean>;
@@ -21,17 +31,17 @@ declare function usePlainKey(usePlainKeyParams: usePlainKeyParams): {
     webAuthnId: string;
   } | null>;
   registeredResponse: Ref<RegistrationCompleteResponse | null, RegistrationCompleteResponse | null>;
-  addCredential: (beginParams: UserCredentialBeginRequest) => Promise<UserCredentialCompleteResponse | ErrorResponse>;
+  addCredential: (addCredentialParams: AddCredentialParams) => Promise<UserCredentialCompleteResponse | ErrorResponse>;
   isAddingCredential: Ref<boolean, boolean>;
   addCredentialError: Ref<string | null, string | null>;
   addCredentialSuccess: Ref<boolean, boolean>;
   addedCredentialResponse: Ref<UserCredentialCompleteResponse | null, UserCredentialCompleteResponse | null>;
-  login: (beginParams: LoginBeginRequest) => Promise<LoginCompleteResponse>;
+  login: (loginParams: LoginParams) => Promise<LoginCompleteResponse>;
   isLoggingIn: Ref<boolean, boolean>;
   loginError: Ref<string | null, string | null>;
   loginSuccess: Ref<boolean, boolean>;
   loggedInResponse: Ref<LoginCompleteResponse | null, LoginCompleteResponse | null>;
 };
 //#endregion
-export { ErrorResponse, usePlainKey, usePlainKeyParams };
+export { AddCredentialParams, ErrorResponse, LoginParams, RegisterParams, usePlainKey, usePlainKeyParams };
 //# sourceMappingURL=index.d.mts.map

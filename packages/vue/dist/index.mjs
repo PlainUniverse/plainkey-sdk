@@ -18,13 +18,16 @@ function usePlainKey(usePlainKeyParams) {
 	const loginError = ref(null);
 	const loginSuccess = ref(false);
 	const loggedInResponse = ref(null);
-	async function register(beginParams) {
+	async function register(registerParams) {
 		try {
 			isRegistering.value = true;
 			registerError.value = null;
 			registerSuccess.value = false;
 			registeredCredential.value = null;
-			const registrationResult = await plainKeyClient.Registration(beginParams);
+			const registrationResult = await plainKeyClient.Registration({
+				projectId,
+				userName: registerParams?.userName
+			});
 			registerSuccess.value = registrationResult.success;
 			registeredCredential.value = registrationResult.credential;
 			registeredResponse.value = registrationResult;
@@ -36,13 +39,21 @@ function usePlainKey(usePlainKeyParams) {
 			isRegistering.value = false;
 		}
 	}
-	async function addCredential(beginParams) {
+	/**
+	* The user must be logged in first. Pass in their user token and project ID in beginParams.
+	* However, do not store the token in local storage, database, etc. Always keep it in memory.
+	*/
+	async function addCredential(addCredentialParams) {
 		try {
 			isAddingCredential.value = true;
 			addCredentialError.value = null;
 			addCredentialSuccess.value = false;
 			addedCredentialResponse.value = null;
-			const credentialResult = await plainKeyClient.AddCredential(beginParams);
+			const credentialResult = await plainKeyClient.AddCredential({
+				projectId,
+				userIdentifier: addCredentialParams.userIdentifier,
+				userToken: addCredentialParams.userToken
+			});
 			addCredentialSuccess.value = credentialResult.success;
 			addedCredentialResponse.value = credentialResult;
 			return credentialResult;
@@ -53,13 +64,16 @@ function usePlainKey(usePlainKeyParams) {
 			isAddingCredential.value = false;
 		}
 	}
-	async function login(beginParams) {
+	async function login(loginParams) {
 		try {
 			isLoggingIn.value = true;
 			loginError.value = null;
 			loginSuccess.value = false;
 			loggedInResponse.value = null;
-			const loginResult = await plainKeyClient.Login(beginParams);
+			const loginResult = await plainKeyClient.Login({
+				projectId,
+				userIdentifier: loginParams.userIdentifier
+			});
 			loginSuccess.value = loginResult.verified;
 			loggedInResponse.value = loginResult;
 			return loginResult;

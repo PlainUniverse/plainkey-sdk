@@ -3,7 +3,8 @@ import { PlainKeyClient } from "@plainkey/browser"
 import type {
   RegistrationCompleteResponse,
   UserCredentialCompleteResponse,
-  LoginCompleteResponse
+  LoginCompleteResponse,
+  UserIdentifier
 } from "@plainkey/types"
 
 import type {
@@ -18,6 +19,19 @@ export type ErrorResponse = {
 
 export type usePlainKeyParams = {
   projectId: string
+}
+
+export type LoginParams = {
+  userIdentifier: UserIdentifier
+}
+
+export type AddCredentialParams = {
+  userIdentifier: UserIdentifier
+  userToken: string
+}
+
+export type RegisterParams = {
+  userName?: string
 }
 
 export function usePlainKey(usePlainKeyParams: usePlainKeyParams) {
@@ -44,7 +58,7 @@ export function usePlainKey(usePlainKeyParams: usePlainKeyParams) {
   const loggedInResponse: Ref<LoginCompleteResponse | null> = ref(null)
 
   async function register(
-    beginParams: RegistrationBeginRequest
+    registerParams: RegisterParams
   ): Promise<RegistrationCompleteResponse | ErrorResponse> {
     try {
       isRegistering.value = true
@@ -52,8 +66,10 @@ export function usePlainKey(usePlainKeyParams: usePlainKeyParams) {
       registerSuccess.value = false
       registeredCredential.value = null
 
-      const registrationResult: RegistrationCompleteResponse =
-        await plainKeyClient.Registration(beginParams)
+      const registrationResult: RegistrationCompleteResponse = await plainKeyClient.Registration({
+        projectId,
+        userName: registerParams?.userName
+      } satisfies RegistrationBeginRequest)
 
       registerSuccess.value = registrationResult.success
       registeredCredential.value = registrationResult.credential
@@ -72,7 +88,7 @@ export function usePlainKey(usePlainKeyParams: usePlainKeyParams) {
    * However, do not store the token in local storage, database, etc. Always keep it in memory.
    */
   async function addCredential(
-    beginParams: UserCredentialBeginRequest
+    addCredentialParams: AddCredentialParams
   ): Promise<UserCredentialCompleteResponse | ErrorResponse> {
     try {
       isAddingCredential.value = true
@@ -80,8 +96,11 @@ export function usePlainKey(usePlainKeyParams: usePlainKeyParams) {
       addCredentialSuccess.value = false
       addedCredentialResponse.value = null
 
-      const credentialResult: UserCredentialCompleteResponse =
-        await plainKeyClient.AddCredential(beginParams)
+      const credentialResult: UserCredentialCompleteResponse = await plainKeyClient.AddCredential({
+        projectId,
+        userIdentifier: addCredentialParams.userIdentifier,
+        userToken: addCredentialParams.userToken
+      } satisfies UserCredentialBeginRequest)
 
       addCredentialSuccess.value = credentialResult.success
       addedCredentialResponse.value = credentialResult
@@ -94,14 +113,17 @@ export function usePlainKey(usePlainKeyParams: usePlainKeyParams) {
     }
   }
 
-  async function login(beginParams: LoginBeginRequest): Promise<LoginCompleteResponse> {
+  async function login(loginParams: LoginParams): Promise<LoginCompleteResponse> {
     try {
       isLoggingIn.value = true
       loginError.value = null
       loginSuccess.value = false
       loggedInResponse.value = null
 
-      const loginResult: LoginCompleteResponse = await plainKeyClient.Login(beginParams)
+      const loginResult: LoginCompleteResponse = await plainKeyClient.Login({
+        projectId,
+        userIdentifier: loginParams.userIdentifier
+      } satisfies LoginBeginRequest)
 
       // Update refs
       loginSuccess.value = loginResult.verified
