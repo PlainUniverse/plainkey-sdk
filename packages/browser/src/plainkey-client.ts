@@ -45,7 +45,10 @@ export class PlainKeyClient {
     // Step 1: Get registration options from server
     const beginResponse = await fetch(`${this.baseUrl}/user/register/begin`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-project-id": this.projectId
+      },
       body: JSON.stringify(beginParams)
     })
 
@@ -63,14 +66,16 @@ export class PlainKeyClient {
 
     // Step 3: Send credential to server for verification
     const completeParams: RegistrationCompleteRequest = {
-      projectId: this.projectId,
       userIdentifier: { userId: user.id },
       credential
     }
 
     const completeResponse = await fetch(`${this.baseUrl}/user/register/complete`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-project-id": this.projectId
+      },
       body: JSON.stringify(completeParams)
     })
 
@@ -98,7 +103,10 @@ export class PlainKeyClient {
 
     const beginResponse = await fetch(`${this.baseUrl}/user/credential/begin`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-project-id": this.projectId
+      },
       body: JSON.stringify(beginParams)
     })
 
@@ -122,7 +130,10 @@ export class PlainKeyClient {
 
     const completeResponse = await fetch(`${this.baseUrl}/user/credential/complete`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-project-id": this.projectId
+      },
       body: JSON.stringify(completeParams)
     })
 
@@ -145,7 +156,10 @@ export class PlainKeyClient {
     // Step 1: Get authentication options from server
     const beginResponse = await fetch(`${this.baseUrl}/login/begin`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-project-id": this.projectId
+      },
       body: JSON.stringify(beginParams)
     })
 
@@ -172,14 +186,16 @@ export class PlainKeyClient {
     // This uses the login session ID from the begin response - always in JS memory.
     // Do not store it in local storage, database, etc.
     const completeParams: LoginCompleteRequest = {
-      projectId: this.projectId,
       loginSessionId: beginResponseData.loginSession.id,
       authenticationResponse
     }
 
     const verificationResponse = await fetch(`${this.baseUrl}/login/complete`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-project-id": this.projectId
+      },
       body: JSON.stringify(completeParams)
     })
 

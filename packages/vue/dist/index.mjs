@@ -24,10 +24,7 @@ function usePlainKey(usePlainKeyParams) {
 			registerError.value = null;
 			registerSuccess.value = false;
 			registeredCredential.value = null;
-			const registrationResult = await plainKeyClient.Registration({
-				projectId,
-				userName: registerParams?.userName
-			});
+			const registrationResult = await plainKeyClient.Registration({ userName: registerParams?.userName });
 			registerSuccess.value = registrationResult.success;
 			registeredCredential.value = registrationResult.credential;
 			registeredResponse.value = registrationResult;
@@ -50,7 +47,6 @@ function usePlainKey(usePlainKeyParams) {
 			addCredentialSuccess.value = false;
 			addedCredentialResponse.value = null;
 			const credentialResult = await plainKeyClient.AddCredential({
-				projectId,
 				userIdentifier: addCredentialParams.userIdentifier,
 				userToken: addCredentialParams.userToken
 			});
@@ -70,10 +66,7 @@ function usePlainKey(usePlainKeyParams) {
 			loginError.value = null;
 			loginSuccess.value = false;
 			loggedInResponse.value = null;
-			const loginResult = await plainKeyClient.Login({
-				projectId,
-				userIdentifier: loginParams.userIdentifier
-			});
+			const loginResult = await plainKeyClient.Login({ userIdentifier: loginParams.userIdentifier });
 			loginSuccess.value = loginResult.verified;
 			loggedInResponse.value = loginResult;
 			return loginResult;

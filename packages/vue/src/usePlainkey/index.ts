@@ -3,8 +3,7 @@ import { PlainKeyClient } from "@plainkey/browser"
 import type {
   RegistrationCompleteResponse,
   UserCredentialCompleteResponse,
-  LoginCompleteResponse,
-  UserIdentifier
+  LoginCompleteResponse
 } from "@plainkey/types"
 
 import type {
@@ -21,18 +20,9 @@ export type usePlainKeyParams = {
   projectId: string
 }
 
-export type LoginParams = {
-  userIdentifier?: UserIdentifier
-}
-
-export type AddCredentialParams = {
-  userIdentifier: UserIdentifier
-  userToken: string
-}
-
-export type RegisterParams = {
-  userName?: string
-}
+export type LoginParams = LoginBeginRequest
+export type AddCredentialParams = UserCredentialBeginRequest
+export type RegisterParams = RegistrationBeginRequest
 
 export function usePlainKey(usePlainKeyParams: usePlainKeyParams) {
   const { projectId } = usePlainKeyParams
@@ -67,7 +57,6 @@ export function usePlainKey(usePlainKeyParams: usePlainKeyParams) {
       registeredCredential.value = null
 
       const registrationResult: RegistrationCompleteResponse = await plainKeyClient.Registration({
-        projectId,
         userName: registerParams?.userName
       } satisfies RegistrationBeginRequest)
 
@@ -97,7 +86,6 @@ export function usePlainKey(usePlainKeyParams: usePlainKeyParams) {
       addedCredentialResponse.value = null
 
       const credentialResult: UserCredentialCompleteResponse = await plainKeyClient.AddCredential({
-        projectId,
         userIdentifier: addCredentialParams.userIdentifier,
         userToken: addCredentialParams.userToken
       } satisfies UserCredentialBeginRequest)
@@ -121,7 +109,6 @@ export function usePlainKey(usePlainKeyParams: usePlainKeyParams) {
       loggedInResponse.value = null
 
       const loginResult: LoginCompleteResponse = await plainKeyClient.Login({
-        projectId,
         userIdentifier: loginParams.userIdentifier
       } satisfies LoginBeginRequest)
 

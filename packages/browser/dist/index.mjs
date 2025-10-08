@@ -14,7 +14,10 @@ var PlainKeyClient = class {
 	async Registration(beginParams) {
 		const beginResponse = await fetch(`${this.baseUrl}/user/register/begin`, {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			headers: {
+				"Content-Type": "application/json",
+				"x-project-id": this.projectId
+			},
 			body: JSON.stringify(beginParams)
 		});
 		if (!beginResponse.ok) {
@@ -24,13 +27,15 @@ var PlainKeyClient = class {
 		const { options, user } = await beginResponse.json();
 		const credential = await startRegistration({ optionsJSON: options });
 		const completeParams = {
-			projectId: this.projectId,
 			userIdentifier: { userId: user.id },
 			credential
 		};
 		const completeResponse = await fetch(`${this.baseUrl}/user/register/complete`, {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			headers: {
+				"Content-Type": "application/json",
+				"x-project-id": this.projectId
+			},
 			body: JSON.stringify(completeParams)
 		});
 		if (!completeResponse.ok) {
@@ -49,7 +54,10 @@ var PlainKeyClient = class {
 	async AddCredential(beginParams) {
 		const beginResponse = await fetch(`${this.baseUrl}/user/credential/begin`, {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			headers: {
+				"Content-Type": "application/json",
+				"x-project-id": this.projectId
+			},
 			body: JSON.stringify(beginParams)
 		});
 		if (!beginResponse.ok) {
@@ -64,7 +72,10 @@ var PlainKeyClient = class {
 		};
 		const completeResponse = await fetch(`${this.baseUrl}/user/credential/complete`, {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			headers: {
+				"Content-Type": "application/json",
+				"x-project-id": this.projectId
+			},
 			body: JSON.stringify(completeParams)
 		});
 		if (!completeResponse.ok) {
@@ -81,7 +92,10 @@ var PlainKeyClient = class {
 	async Login(beginParams) {
 		const beginResponse = await fetch(`${this.baseUrl}/login/begin`, {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			headers: {
+				"Content-Type": "application/json",
+				"x-project-id": this.projectId
+			},
 			body: JSON.stringify(beginParams)
 		});
 		if (!beginResponse.ok) {
@@ -93,13 +107,15 @@ var PlainKeyClient = class {
 		const authenticationResponse = await startAuthentication({ optionsJSON: beginResponseData.options });
 		if (!authenticationResponse) throw new Error("No authentication response from browser");
 		const completeParams = {
-			projectId: this.projectId,
 			loginSessionId: beginResponseData.loginSession.id,
 			authenticationResponse
 		};
 		const verificationResponse = await fetch(`${this.baseUrl}/login/complete`, {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			headers: {
+				"Content-Type": "application/json",
+				"x-project-id": this.projectId
+			},
 			body: JSON.stringify(completeParams)
 		});
 		if (!verificationResponse.ok) {

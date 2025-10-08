@@ -1,6 +1,6 @@
 {
   "name": "@plainkey/browser",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "PlainKey TypeScript browser SDK",
   "module": "dist/index.mjs",
   "types": "dist/index.d.mts",
