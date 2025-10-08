@@ -124,6 +124,7 @@ export class PlainKeyClient {
 
     // Step 3: Send credential to server for verification
     const completeParams: UserCredentialCompleteRequest = {
+      userToken: beginParams.userToken,
       userIdentifier: { userId: user.id },
       credential
     }

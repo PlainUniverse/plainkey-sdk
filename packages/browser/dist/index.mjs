@@ -67,6 +67,7 @@ var PlainKeyClient = class {
 		const { options, user } = await beginResponse.json();
 		const credential = await startRegistration({ optionsJSON: options });
 		const completeParams = {
+			userToken: beginParams.userToken,
 			userIdentifier: { userId: user.id },
 			credential
 		};
