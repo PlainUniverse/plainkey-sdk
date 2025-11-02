@@ -1,8 +1,9 @@
 {
     "name": "@plainkey/server",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "PlainKey TypeScript server SDK",
     "module": "dist/index.mjs",
+    "main": "dist/index.mjs",
     "types": "dist/index.d.ts",
     "exports": {
         ".": {
