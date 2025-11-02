@@ -31,6 +31,8 @@
     "vitest": "^3.2.4"
   },
   "devDependencies": {
-    "tsdown": "^0.15.5"
+    "tsdown": "^0.15.5",
+    "unplugin-vue": "^7.0.4",
+    "vue-tsc": "^3.0.10"
   }
 }
