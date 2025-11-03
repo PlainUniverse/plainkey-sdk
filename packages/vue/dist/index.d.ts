@@ -37,4 +37,4 @@ declare function usePlainKey(usePlainKeyParams: usePlainKeyParams): {
 };
 //#endregion
 export { AddCredentialParams, ErrorResponse, LoginParams, RegisterParams, usePlainKey, usePlainKeyParams };
-//# sourceMappingURL=index.d.mts.map
+//# sourceMappingURL=index.d.ts.map

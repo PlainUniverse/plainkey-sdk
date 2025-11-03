@@ -108,4 +108,4 @@ function usePlainKey(usePlainKeyParams) {
 
 //#endregion
 export { usePlainKey };
-//# sourceMappingURL=index.mjs.map
+//# sourceMappingURL=index.js.map
