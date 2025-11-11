@@ -131,4 +131,4 @@ var PlainKeyClient = class {
 
 //#endregion
 export { PlainKeyClient };
-//# sourceMappingURL=index.mjs.map
+//# sourceMappingURL=index.js.map

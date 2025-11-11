@@ -27,4 +27,4 @@ declare class PlainKeyClient {
 }
 //#endregion
 export { PlainKeyClient, PlainKeyClientParams };
-//# sourceMappingURL=index.d.mts.map
+//# sourceMappingURL=index.d.ts.map

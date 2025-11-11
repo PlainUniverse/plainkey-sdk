@@ -93,4 +93,4 @@ type LoginCompleteResponse = {
 };
 //#endregion
 export { type AuthenticationResponseJSON, ErrorResponse, IssuedSession, IssuedToken, LoginBeginRequest, LoginBeginResponse, LoginCompleteRequest, LoginCompleteResponse, type PublicKeyCredentialCreationOptionsJSON, type PublicKeyCredentialRequestOptionsJSON, PublicUser, RegistrationBeginRequest, RegistrationBeginResponse, RegistrationCompleteRequest, RegistrationCompleteResponse, type RegistrationResponseJSON, UserCredentialBeginRequest, UserCredentialBeginResponse, UserCredentialCompleteRequest, UserCredentialCompleteResponse, UserIdentifier };
-//# sourceMappingURL=index.d.mts.map
+//# sourceMappingURL=index.d.ts.map
