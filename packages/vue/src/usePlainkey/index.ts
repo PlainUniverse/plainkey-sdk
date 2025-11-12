@@ -18,6 +18,7 @@ export type ErrorResponse = {
 
 export type usePlainKeyParams = {
   projectId: string
+  baseUrl?: string
 }
 
 export type LoginParams = LoginBeginRequest
@@ -25,8 +26,8 @@ export type AddCredentialParams = UserCredentialBeginRequest
 export type RegisterParams = RegistrationBeginRequest
 
 export function usePlainKey(usePlainKeyParams: usePlainKeyParams) {
-  const { projectId } = usePlainKeyParams
-  const plainKeyClient = new PlainKeyClient({ projectId })
+  const { projectId, baseUrl } = usePlainKeyParams
+  const plainKeyClient = new PlainKeyClient({ projectId, baseUrl })
 
   // Registration (user creation + passkey registration)
   const isRegistering = ref(false)

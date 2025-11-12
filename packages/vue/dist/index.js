@@ -3,8 +3,11 @@ import { PlainKeyClient } from "@plainkey/browser";
 
 //#region src/usePlainkey/index.ts
 function usePlainKey(usePlainKeyParams) {
-	const { projectId } = usePlainKeyParams;
-	const plainKeyClient = new PlainKeyClient({ projectId });
+	const { projectId, baseUrl } = usePlainKeyParams;
+	const plainKeyClient = new PlainKeyClient({
+		projectId,
+		baseUrl
+	});
 	const isRegistering = ref(false);
 	const registerError = ref(null);
 	const registerSuccess = ref(false);

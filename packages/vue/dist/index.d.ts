@@ -7,6 +7,7 @@ type ErrorResponse = {
 };
 type usePlainKeyParams = {
   projectId: string;
+  baseUrl?: string;
 };
 type LoginParams = LoginBeginRequest;
 type AddCredentialParams = UserCredentialBeginRequest;
