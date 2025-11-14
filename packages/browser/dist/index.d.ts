@@ -1,30 +1,87 @@
-import { LoginBeginRequest, LoginCompleteResponse, RegistrationBeginRequest, RegistrationCompleteResponse, UserCredentialBeginRequest, UserCredentialCompleteResponse } from "@plainkey/types";
+import { IssuedSession, IssuedToken, PublicUser, UserIdentifier } from "@plainkey/types";
 
-//#region src/plainkey-client.d.ts
-type PlainKeyClientParams = {
-  projectId: string;
-  baseUrl?: string;
-};
-declare class PlainKeyClient {
+//#region src/plainKey.d.ts
+interface LoginResult {
+  success: boolean;
+  data?: {
+    user: PublicUser;
+    token: IssuedToken;
+    session?: IssuedSession;
+  };
+  error?: {
+    message: string;
+  };
+}
+interface CreateUserWithPasskeyResult {
+  success: boolean;
+  data?: {
+    user: PublicUser;
+    token: IssuedToken;
+    credential: {
+      id: string;
+      webAuthnId: string;
+    };
+    session?: IssuedSession;
+  };
+  error?: {
+    message: string;
+  };
+}
+interface AddPasskeyResult {
+  success: boolean;
+  data?: {
+    user: PublicUser;
+    token: IssuedToken;
+    credential: {
+      id: string;
+      webAuthnId: string;
+    };
+    session?: IssuedSession;
+  };
+  error?: {
+    message: string;
+  };
+}
+/**
+ * PlainKey client for browser. Used to register new users, add passkeys to existing users, and log users in.
+ *
+ * Docs: https://plainkey.io/docs
+ *
+ * @param projectId - Your PlainKey project ID. You can find it in the PlainKey admin dashboard.
+ * @param baseUrl - Set by default to https://api.plainkey.io/api. Change only for development purposes.
+ */
+declare class PlainKey {
   private readonly projectId;
   private readonly baseUrl;
-  constructor(clientParams: PlainKeyClientParams);
+  constructor(projectId: string, baseUrl?: string);
   /**
-   * Registration of a new user with passkey.
-   * Creates a new user and adds a credential to it.
+   * Helper to parse response JSON.
+   * Throws error if status code is not 200 OK, if the response is not valid JSON.
    */
-  Registration(beginParams: RegistrationBeginRequest): Promise<RegistrationCompleteResponse>;
+  private parseResponse;
   /**
-   * Add credential to existing user.
-   * Requires a valid user authentication token passed in beginParams, which will be sent in the request body.
-   * However, do not store the token in local storage, database, etc. Always keep it in memory.
+   * Registration of a new user with a passkey. Will require user interaction to create a passkey.
+   *
+   * @param userName - A stable unique identifier for the user, like an email address or username.
+   * Can be empty for usernameless login.
    */
-  AddCredential(beginParams: UserCredentialBeginRequest): Promise<UserCredentialCompleteResponse>;
+  createUserWithPasskey(userName?: string): Promise<CreateUserWithPasskeyResult>;
   /**
-   * Performs a login ceremony.
+   * Adds a passkey to an existing user. Will require user interaction to create a passkey.
+   *
+   * @param userToken - The user authentication token, obtained from login.
+   * Do NOT store it in local storage, database, etc. Always keep it in memory.
+   *
+   * @param userIdentifier - An object with either the user's PlainKey User ID or their userName.
    */
-  Login(beginParams: LoginBeginRequest): Promise<LoginCompleteResponse>;
+  addPasskey(userToken: string, userIdentifier: UserIdentifier): Promise<AddPasskeyResult>;
+  /**
+   * Logs a user in. Will require user interaction to authenticate.
+   *
+   * @param userIdentifier - An object with either the user's PlainKey User ID or their userName.
+   */
+  login(userIdentifier: UserIdentifier): Promise<LoginResult>;
 }
 //#endregion
-export { PlainKeyClient, PlainKeyClientParams };
+export { AddPasskeyResult, CreateUserWithPasskeyResult, LoginResult, PlainKey };
 //# sourceMappingURL=index.d.ts.map

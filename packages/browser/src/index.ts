@@ -1,1 +1,1 @@
-export * from "./plainkey-client"
+export * from "./plainKey"
