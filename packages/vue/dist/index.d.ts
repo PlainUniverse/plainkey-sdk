@@ -10,7 +10,7 @@ import { PlainKey } from "@plainkey/browser";
  * Docs: https://plainkey.io/docs
  *
  * @example
- * const { login, createUserWithPasskey, addPasskey } = usePlainKey2("projectId")
+ * const { login, createUserWithPasskey, addPasskey } = usePlainKey("projectId")
  */
 declare function usePlainKey(projectId: string, baseUrl?: string): PlainKey;
 //#endregion

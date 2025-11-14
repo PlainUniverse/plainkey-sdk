@@ -9,9 +9,9 @@ import type {
   LoginBeginRequest,
   LoginCompleteRequest,
   UserIdentifier,
-  PublicUser,
-  IssuedToken,
-  IssuedSession
+  CreateUserWithPasskeyResult,
+  AddPasskeyResult,
+  LoginResult
 } from "@plainkey/types"
 
 import type {
@@ -20,62 +20,11 @@ import type {
   UserCredentialBeginResponse,
   UserCredentialCompleteResponse,
   LoginBeginResponse,
-  LoginCompleteResponse,
-  ErrorResponse
+  LoginCompleteResponse
 } from "@plainkey/types"
 
-export interface LoginResult {
-  success: boolean
-  data?: {
-    user: PublicUser
-    token: IssuedToken
-
-    // Internal PlainKey feature only.
-    session?: IssuedSession
-  }
-  error?: {
-    message: string
-  }
-}
-
-export interface CreateUserWithPasskeyResult {
-  success: boolean
-  data?: {
-    user: PublicUser
-    token: IssuedToken
-    credential: {
-      id: string
-      webAuthnId: string
-    }
-
-    // Internal PlainKey feature only.
-    session?: IssuedSession
-  }
-  error?: {
-    message: string
-  }
-}
-
-export interface AddPasskeyResult {
-  success: boolean
-  data?: {
-    user: PublicUser
-    token: IssuedToken
-    credential: {
-      id: string
-      webAuthnId: string
-    }
-
-    // Internal PlainKey feature only.
-    session?: IssuedSession
-  }
-  error?: {
-    message: string
-  }
-}
-
 /**
- * PlainKey client for browser. Used to register new users, add passkeys to existing users, and log users in.
+ * PlainKey client for the browser. Used to register new users, add passkeys to existing users, and log users in.
  *
  * Docs: https://plainkey.io/docs
  *

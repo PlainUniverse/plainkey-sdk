@@ -9,7 +9,7 @@ import { PlainKey } from "@plainkey/browser";
 * Docs: https://plainkey.io/docs
 *
 * @example
-* const { login, createUserWithPasskey, addPasskey } = usePlainKey2("projectId")
+* const { login, createUserWithPasskey, addPasskey } = usePlainKey("projectId")
 */
 function usePlainKey(projectId, baseUrl) {
 	return new PlainKey(projectId, baseUrl);

@@ -1,49 +1,9 @@
-import { IssuedSession, IssuedToken, PublicUser, UserIdentifier } from "@plainkey/types";
+import { AddPasskeyResult, CreateUserWithPasskeyResult, LoginResult, UserIdentifier } from "@plainkey/types";
 
 //#region src/plainKey.d.ts
-interface LoginResult {
-  success: boolean;
-  data?: {
-    user: PublicUser;
-    token: IssuedToken;
-    session?: IssuedSession;
-  };
-  error?: {
-    message: string;
-  };
-}
-interface CreateUserWithPasskeyResult {
-  success: boolean;
-  data?: {
-    user: PublicUser;
-    token: IssuedToken;
-    credential: {
-      id: string;
-      webAuthnId: string;
-    };
-    session?: IssuedSession;
-  };
-  error?: {
-    message: string;
-  };
-}
-interface AddPasskeyResult {
-  success: boolean;
-  data?: {
-    user: PublicUser;
-    token: IssuedToken;
-    credential: {
-      id: string;
-      webAuthnId: string;
-    };
-    session?: IssuedSession;
-  };
-  error?: {
-    message: string;
-  };
-}
+
 /**
- * PlainKey client for browser. Used to register new users, add passkeys to existing users, and log users in.
+ * PlainKey client for the browser. Used to register new users, add passkeys to existing users, and log users in.
  *
  * Docs: https://plainkey.io/docs
  *
@@ -83,5 +43,5 @@ declare class PlainKey {
   login(userIdentifier: UserIdentifier): Promise<LoginResult>;
 }
 //#endregion
-export { AddPasskeyResult, CreateUserWithPasskeyResult, LoginResult, PlainKey };
+export { PlainKey };
 //# sourceMappingURL=index.d.ts.map

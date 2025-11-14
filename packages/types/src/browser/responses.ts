@@ -1,4 +1,4 @@
-import { PublicUser } from "../common"
+import { UserInfo } from "../common"
 import type {
   PublicKeyCredentialCreationOptionsJSON,
   PublicKeyCredentialRequestOptionsJSON
@@ -23,13 +23,13 @@ export type IssuedSession = {
 
 // User Registration
 export type RegistrationBeginResponse = {
-  user: PublicUser
+  user: UserInfo
   options: PublicKeyCredentialCreationOptionsJSON
 }
 
 export type RegistrationCompleteResponse = {
   success: boolean
-  user: PublicUser
+  user: UserInfo
   token: IssuedToken
   session?: IssuedSession
   credential: {
@@ -40,13 +40,13 @@ export type RegistrationCompleteResponse = {
 
 // Credential registration
 export type UserCredentialBeginResponse = {
-  user: PublicUser
+  user: UserInfo
   options: PublicKeyCredentialCreationOptionsJSON
 }
 
 export type UserCredentialCompleteResponse = {
   success: boolean
-  user: PublicUser
+  user: UserInfo
   token: IssuedToken
   session?: IssuedSession
   credential: {
@@ -68,7 +68,7 @@ export type LoginBeginResponse = {
 
 export type LoginCompleteResponse = {
   verified: boolean
-  user: PublicUser
+  user: UserInfo
   token: IssuedToken
   session?: IssuedSession
 }

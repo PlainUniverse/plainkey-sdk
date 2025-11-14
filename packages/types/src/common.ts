@@ -3,7 +3,7 @@ export type UserIdentifier = {
   userName?: string
 }
 
-export type PublicUser = {
+export type UserInfo = {
   id: string
   userName?: string
 }

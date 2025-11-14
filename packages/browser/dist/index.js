@@ -2,7 +2,7 @@ import { startAuthentication, startRegistration } from "@simplewebauthn/browser"
 
 //#region src/plainKey.ts
 /**
-* PlainKey client for browser. Used to register new users, add passkeys to existing users, and log users in.
+* PlainKey client for the browser. Used to register new users, add passkeys to existing users, and log users in.
 *
 * Docs: https://plainkey.io/docs
 *

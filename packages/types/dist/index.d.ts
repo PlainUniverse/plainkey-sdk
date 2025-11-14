@@ -5,7 +5,7 @@ type UserIdentifier = {
   userId?: string;
   userName?: string;
 };
-type PublicUser = {
+type UserInfo = {
   id: string;
   userName?: string;
 };
@@ -49,12 +49,12 @@ type IssuedSession = {
   refreshToken: string;
 };
 type RegistrationBeginResponse = {
-  user: PublicUser;
+  user: UserInfo;
   options: PublicKeyCredentialCreationOptionsJSON$1;
 };
 type RegistrationCompleteResponse = {
   success: boolean;
-  user: PublicUser;
+  user: UserInfo;
   token: IssuedToken;
   session?: IssuedSession;
   credential: {
@@ -63,12 +63,12 @@ type RegistrationCompleteResponse = {
   };
 };
 type UserCredentialBeginResponse = {
-  user: PublicUser;
+  user: UserInfo;
   options: PublicKeyCredentialCreationOptionsJSON$1;
 };
 type UserCredentialCompleteResponse = {
   success: boolean;
-  user: PublicUser;
+  user: UserInfo;
   token: IssuedToken;
   session?: IssuedSession;
   credential: {
@@ -87,10 +87,51 @@ type LoginBeginResponse = {
 };
 type LoginCompleteResponse = {
   verified: boolean;
-  user: PublicUser;
+  user: UserInfo;
   token: IssuedToken;
   session?: IssuedSession;
 };
 //#endregion
-export { type AuthenticationResponseJSON, ErrorResponse, IssuedSession, IssuedToken, LoginBeginRequest, LoginBeginResponse, LoginCompleteRequest, LoginCompleteResponse, type PublicKeyCredentialCreationOptionsJSON, type PublicKeyCredentialRequestOptionsJSON, PublicUser, RegistrationBeginRequest, RegistrationBeginResponse, RegistrationCompleteRequest, RegistrationCompleteResponse, type RegistrationResponseJSON, UserCredentialBeginRequest, UserCredentialBeginResponse, UserCredentialCompleteRequest, UserCredentialCompleteResponse, UserIdentifier };
+//#region src/browser/result.d.ts
+interface CredentialInfo {
+  id: string;
+  webAuthnId: string;
+}
+interface LoginResult {
+  success: boolean;
+  data?: {
+    user: UserInfo;
+    token: IssuedToken;
+    session?: IssuedSession;
+  };
+  error?: {
+    message: string;
+  };
+}
+interface CreateUserWithPasskeyResult {
+  success: boolean;
+  data?: {
+    user: UserInfo;
+    token: IssuedToken;
+    credential: CredentialInfo;
+    session?: IssuedSession;
+  };
+  error?: {
+    message: string;
+  };
+}
+interface AddPasskeyResult {
+  success: boolean;
+  data?: {
+    user: UserInfo;
+    token: IssuedToken;
+    credential: CredentialInfo;
+    session?: IssuedSession;
+  };
+  error?: {
+    message: string;
+  };
+}
+//#endregion
+export { AddPasskeyResult, type AuthenticationResponseJSON, CreateUserWithPasskeyResult, CredentialInfo, ErrorResponse, IssuedSession, IssuedToken, LoginBeginRequest, LoginBeginResponse, LoginCompleteRequest, LoginCompleteResponse, LoginResult, type PublicKeyCredentialCreationOptionsJSON, type PublicKeyCredentialRequestOptionsJSON, RegistrationBeginRequest, RegistrationBeginResponse, RegistrationCompleteRequest, RegistrationCompleteResponse, type RegistrationResponseJSON, UserCredentialBeginRequest, UserCredentialBeginResponse, UserCredentialCompleteRequest, UserCredentialCompleteResponse, UserIdentifier, UserInfo };
 //# sourceMappingURL=index.d.ts.map
