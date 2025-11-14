@@ -1,4 +1,5 @@
-import { PlainKey } from "@plainkey/browser";
+import * as _plainkey_types0 from "@plainkey/types";
+import { UserIdentifier } from "@plainkey/types";
 
 //#region src/usePlainkey/index.d.ts
 
@@ -12,7 +13,11 @@ import { PlainKey } from "@plainkey/browser";
  * @example
  * const { login, createUserWithPasskey, addPasskey } = usePlainKey("projectId")
  */
-declare function usePlainKey(projectId: string, baseUrl?: string): PlainKey;
+declare function usePlainKey(projectId: string, baseUrl?: string): {
+  authenticate: (userIdentifier: UserIdentifier) => Promise<_plainkey_types0.AuthenticateResult>;
+  createUserWithPasskey: (userName?: string) => Promise<_plainkey_types0.CreateUserWithPasskeyResult>;
+  addPasskey: (userToken: string, userIdentifier: UserIdentifier) => Promise<_plainkey_types0.AddPasskeyResult>;
+};
 //#endregion
 export { usePlainKey };
 //# sourceMappingURL=index.d.ts.map

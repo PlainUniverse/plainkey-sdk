@@ -1,4 +1,5 @@
 import { PlainKey } from "@plainkey/browser"
+import { UserIdentifier } from "@plainkey/types"
 
 /**
  *
@@ -11,5 +12,12 @@ import { PlainKey } from "@plainkey/browser"
  * const { login, createUserWithPasskey, addPasskey } = usePlainKey("projectId")
  */
 export function usePlainKey(projectId: string, baseUrl?: string) {
-  return new PlainKey(projectId, baseUrl)
+  const plainKey = new PlainKey(projectId, baseUrl)
+
+  // .bind() attaches the class method to the plainKey instance so it can be used as a standalone function.
+  return {
+    authenticate: plainKey.authenticate.bind(plainKey),
+    createUserWithPasskey: plainKey.createUserWithPasskey.bind(plainKey),
+    addPasskey: plainKey.addPasskey.bind(plainKey)
+  }
 }

@@ -12,7 +12,12 @@ import { PlainKey } from "@plainkey/browser";
 * const { login, createUserWithPasskey, addPasskey } = usePlainKey("projectId")
 */
 function usePlainKey(projectId, baseUrl) {
-	return new PlainKey(projectId, baseUrl);
+	const plainKey = new PlainKey(projectId, baseUrl);
+	return {
+		authenticate: plainKey.authenticate.bind(plainKey),
+		createUserWithPasskey: plainKey.createUserWithPasskey.bind(plainKey),
+		addPasskey: plainKey.addPasskey.bind(plainKey)
+	};
 }
 
 //#endregion
