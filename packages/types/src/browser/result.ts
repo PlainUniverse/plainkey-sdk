@@ -11,7 +11,7 @@ export interface CredentialInfo {
   webAuthnId: string
 }
 
-export interface LoginResult {
+export interface AuthenticateResult {
   success: boolean
   data?: {
     user: UserInfo

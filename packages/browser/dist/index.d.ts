@@ -1,4 +1,4 @@
-import { AddPasskeyResult, CreateUserWithPasskeyResult, LoginResult, UserIdentifier } from "@plainkey/types";
+import { AddPasskeyResult, AuthenticateResult, CreateUserWithPasskeyResult, UserIdentifier } from "@plainkey/types";
 
 //#region src/plainKey.d.ts
 
@@ -36,11 +36,12 @@ declare class PlainKey {
    */
   addPasskey(userToken: string, userIdentifier: UserIdentifier): Promise<AddPasskeyResult>;
   /**
-   * Logs a user in. Will require user interaction to authenticate.
+   * Authenticates a user. Can be used for login, verification, 2FA, etc.
+   * Will require user interaction to authenticate.
    *
    * @param userIdentifier - An object with either the user's PlainKey User ID or their userName.
    */
-  login(userIdentifier: UserIdentifier): Promise<LoginResult>;
+  authenticate(userIdentifier: UserIdentifier): Promise<AuthenticateResult>;
 }
 //#endregion
 export { PlainKey };

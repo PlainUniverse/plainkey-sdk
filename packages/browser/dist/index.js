@@ -147,11 +147,12 @@ var PlainKey = class {
 		}
 	}
 	/**
-	* Logs a user in. Will require user interaction to authenticate.
+	* Authenticates a user. Can be used for login, verification, 2FA, etc.
+	* Will require user interaction to authenticate.
 	*
 	* @param userIdentifier - An object with either the user's PlainKey User ID or their userName.
 	*/
-	async login(userIdentifier) {
+	async authenticate(userIdentifier) {
 		if (!userIdentifier) throw new Error("User identifier is required");
 		if (!userIdentifier.userId && !userIdentifier.userName) throw new Error("Either a userId or a userName is required");
 		try {

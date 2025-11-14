@@ -97,7 +97,7 @@ interface CredentialInfo {
   id: string;
   webAuthnId: string;
 }
-interface LoginResult {
+interface AuthenticateResult {
   success: boolean;
   data?: {
     user: UserInfo;
@@ -133,5 +133,5 @@ interface AddPasskeyResult {
   };
 }
 //#endregion
-export { AddPasskeyResult, type AuthenticationResponseJSON, CreateUserWithPasskeyResult, CredentialInfo, ErrorResponse, IssuedSession, IssuedToken, LoginBeginRequest, LoginBeginResponse, LoginCompleteRequest, LoginCompleteResponse, LoginResult, type PublicKeyCredentialCreationOptionsJSON, type PublicKeyCredentialRequestOptionsJSON, RegistrationBeginRequest, RegistrationBeginResponse, RegistrationCompleteRequest, RegistrationCompleteResponse, type RegistrationResponseJSON, UserCredentialBeginRequest, UserCredentialBeginResponse, UserCredentialCompleteRequest, UserCredentialCompleteResponse, UserIdentifier, UserInfo };
+export { AddPasskeyResult, AuthenticateResult, type AuthenticationResponseJSON, CreateUserWithPasskeyResult, CredentialInfo, ErrorResponse, IssuedSession, IssuedToken, LoginBeginRequest, LoginBeginResponse, LoginCompleteRequest, LoginCompleteResponse, type PublicKeyCredentialCreationOptionsJSON, type PublicKeyCredentialRequestOptionsJSON, RegistrationBeginRequest, RegistrationBeginResponse, RegistrationCompleteRequest, RegistrationCompleteResponse, type RegistrationResponseJSON, UserCredentialBeginRequest, UserCredentialBeginResponse, UserCredentialCompleteRequest, UserCredentialCompleteResponse, UserIdentifier, UserInfo };
 //# sourceMappingURL=index.d.ts.map

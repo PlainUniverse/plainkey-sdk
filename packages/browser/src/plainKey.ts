@@ -11,7 +11,7 @@ import type {
   UserIdentifier,
   CreateUserWithPasskeyResult,
   AddPasskeyResult,
-  LoginResult
+  AuthenticateResult
 } from "@plainkey/types"
 
 import type {
@@ -225,11 +225,12 @@ export class PlainKey {
   }
 
   /**
-   * Logs a user in. Will require user interaction to authenticate.
+   * Authenticates a user. Can be used for login, verification, 2FA, etc.
+   * Will require user interaction to authenticate.
    *
    * @param userIdentifier - An object with either the user's PlainKey User ID or their userName.
    */
-  async login(userIdentifier: UserIdentifier): Promise<LoginResult> {
+  async authenticate(userIdentifier: UserIdentifier): Promise<AuthenticateResult> {
     // Validate user identifier
     if (!userIdentifier) throw new Error("User identifier is required")
     if (!userIdentifier.userId && !userIdentifier.userName)
