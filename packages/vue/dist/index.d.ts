@@ -14,7 +14,7 @@ import { UserIdentifier } from "@plainkey/types";
  * const { login, createUserWithPasskey, addPasskey } = usePlainKey("projectId")
  */
 declare function usePlainKey(projectId: string, baseUrl?: string): {
-  authenticate: (userIdentifier: UserIdentifier) => Promise<_plainkey_types0.AuthenticateResult>;
+  authenticate: (userIdentifier?: UserIdentifier) => Promise<_plainkey_types0.AuthenticateResult>;
   createUserWithPasskey: (userName?: string) => Promise<_plainkey_types0.CreateUserWithPasskeyResult>;
   addPasskey: (userToken: string, userIdentifier: UserIdentifier) => Promise<_plainkey_types0.AddPasskeyResult>;
 };

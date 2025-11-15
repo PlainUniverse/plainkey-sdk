@@ -20,7 +20,7 @@ export function usePlainKey(projectId: string, baseUrl?: string) {
    *
    * @param userIdentifier - An object with either the user's PlainKey User ID or their userName.
    */
-  function authenticate(userIdentifier: UserIdentifier) {
+  function authenticate(userIdentifier?: UserIdentifier) {
     return plainKey.authenticate(userIdentifier)
   }
 

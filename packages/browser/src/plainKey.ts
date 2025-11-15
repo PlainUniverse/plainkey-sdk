@@ -228,14 +228,10 @@ export class PlainKey {
    * Authenticates a user. Can be used for login, verification, 2FA, etc.
    * Will require user interaction to authenticate.
    *
-   * @param userIdentifier - An object with either the user's PlainKey User ID or their userName.
+   * @param userIdentifier - Optional object containing either the user's PlainKey User ID or their userName.
+   * Does not have to be provided for usernameless authentication.
    */
-  async authenticate(userIdentifier: UserIdentifier): Promise<AuthenticateResult> {
-    // Validate user identifier
-    if (!userIdentifier) throw new Error("User identifier is required")
-    if (!userIdentifier.userId && !userIdentifier.userName)
-      throw new Error("Either a userId or a userName is required")
-
+  async authenticate(userIdentifier?: UserIdentifier): Promise<AuthenticateResult> {
     try {
       // Step 1: Get authentication options from server
       const beginParams: LoginBeginRequest = { userIdentifier }
