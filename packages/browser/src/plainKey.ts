@@ -80,7 +80,7 @@ export class PlainKey {
    * Registration of a new user with a passkey. Will require user interaction to create a passkey.
    *
    * @param userName - A stable unique identifier for the user, like an email address or username.
-   * Can be empty for usernameless login.
+   * Can be empty for usernameless authentication.
    */
   async createUserWithPasskey(userName?: string): Promise<CreateUserWithPasskeyResult> {
     try {
@@ -148,7 +148,7 @@ export class PlainKey {
   /**
    * Adds a passkey to an existing user. Will require user interaction to create a passkey.
    *
-   * @param userToken - The user authentication token, obtained from login.
+   * @param userToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
    * Do NOT store it in local storage, database, etc. Always keep it in memory.
    *
    * @param userIdentifier - An object with either the user's PlainKey User ID or their userName.
@@ -239,7 +239,7 @@ export class PlainKey {
     try {
       // Step 1: Get authentication options from server
       const beginParams: LoginBeginRequest = { userIdentifier }
-      const beginResponse = await fetch(`${this.baseUrl}/login/begin`, {
+      const beginResponse = await fetch(`${this.baseUrl}/authenticate/begin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -263,14 +263,14 @@ export class PlainKey {
       if (!authenticationResponse) throw new Error("No authentication response from browser")
 
       // Step 3: POST the response to the server
-      // This uses the login session ID from the begin response - always in JS memory.
+      // This uses the authentication session ID from the begin response - always in JS memory.
       // Do not store it in local storage, database, etc.
       const completeParams: LoginCompleteRequest = {
         loginSessionId: beginResponseData.loginSession.id,
         authenticationResponse
       }
 
-      const verificationResponse = await fetch(`${this.baseUrl}/login/complete`, {
+      const verificationResponse = await fetch(`${this.baseUrl}/authenticate/complete`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -282,7 +282,8 @@ export class PlainKey {
       const verificationResponseData: LoginCompleteResponse =
         await this.parseResponse<LoginCompleteResponse>(verificationResponse)
 
-      if (!verificationResponseData.verified) throw new Error("Server could not verify login")
+      if (!verificationResponseData.verified)
+        throw new Error("Server could not verify authentication")
 
       // Return success
       return {
