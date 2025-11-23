@@ -130,8 +130,7 @@ export class PlainKey {
         data: {
           user: completeResponseData.user,
           token: completeResponseData.token,
-          credential: completeResponseData.credential,
-          session: completeResponseData.session
+          credential: completeResponseData.credential
         }
       }
     } catch (error) {
@@ -209,8 +208,7 @@ export class PlainKey {
         data: {
           user: completeResponseData.user,
           token: completeResponseData.token,
-          credential: completeResponseData.credential,
-          session: completeResponseData.session
+          credential: completeResponseData.credential
         }
       }
     } catch (error) {
@@ -286,8 +284,7 @@ export class PlainKey {
         success: verificationResponseData.verified,
         data: {
           user: verificationResponseData.user,
-          token: verificationResponseData.token,
-          session: verificationResponseData.session
+          token: verificationResponseData.token
         }
       }
     } catch (error) {

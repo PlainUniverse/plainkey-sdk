@@ -1,6 +1,6 @@
 {
   "name": "@plainkey/vue",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "description": "PlainKey Vue SDK (composable)",
   "type": "module",
   "main": "./dist/index.js",

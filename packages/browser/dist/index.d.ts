@@ -39,9 +39,8 @@ declare class PlainKey {
    * Authenticates a user. Can be used for login, verification, 2FA, etc.
    * Will require user interaction to authenticate.
    *
-   *
-   * @param userIdentifier - Optional object with either the user's PlainKey User ID or their userName.
-   * Can be empty for usernameless authentication.
+   * @param userIdentifier - Optional object containing either the user's PlainKey User ID or their userName.
+   * Does not have to be provided for usernameless authentication.
    */
   authenticate(userIdentifier?: UserIdentifier): Promise<AuthenticateResult>;
 }

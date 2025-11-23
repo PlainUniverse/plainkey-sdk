@@ -9,16 +9,11 @@ export type ErrorResponse = {
   error: string
 }
 
-// Session/Token
+// Token
 export type IssuedToken = {
   token: string
   expiresInSeconds: number
   tokenType: string
-}
-
-export type IssuedSession = {
-  sessionId: string
-  refreshToken: string
 }
 
 // User Registration
@@ -31,7 +26,6 @@ export type RegistrationCompleteResponse = {
   success: boolean
   user: UserInfo
   token: IssuedToken
-  session?: IssuedSession
   credential: {
     id: string
     webAuthnId: string
@@ -48,7 +42,6 @@ export type UserCredentialCompleteResponse = {
   success: boolean
   user: UserInfo
   token: IssuedToken
-  session?: IssuedSession
   credential: {
     id: string
     webAuthnId: string
@@ -70,7 +63,6 @@ export type LoginCompleteResponse = {
   verified: boolean
   user: UserInfo
   token: IssuedToken
-  session?: IssuedSession
 }
 
 // Re-export types for consumers

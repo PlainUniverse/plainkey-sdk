@@ -1,7 +1,7 @@
 /** Types for the results of the various PlainKey() class methods. */
 
 import { UserInfo } from "../common"
-import { IssuedSession, IssuedToken } from "./responses"
+import { IssuedToken } from "./responses"
 
 export interface CredentialInfo {
   // The credential ID stored in PlainKey's database.
@@ -16,9 +16,6 @@ export interface AuthenticateResult {
   data?: {
     user: UserInfo
     token: IssuedToken
-
-    // Internal PlainKey feature only.
-    session?: IssuedSession
   }
   error?: { message: string }
 }
@@ -29,9 +26,6 @@ export interface CreateUserWithPasskeyResult {
     user: UserInfo
     token: IssuedToken
     credential: CredentialInfo
-
-    // Internal PlainKey feature only.
-    session?: IssuedSession
   }
   error?: { message: string }
 }
@@ -42,9 +36,6 @@ export interface AddPasskeyResult {
     user: UserInfo
     token: IssuedToken
     credential: CredentialInfo
-
-    // Internal PlainKey feature only.
-    session?: IssuedSession
   }
   error?: { message: string }
 }
