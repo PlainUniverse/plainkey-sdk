@@ -29,13 +29,13 @@ import type {
  * Docs: https://plainkey.io/docs
  *
  * @param projectId - Your PlainKey project ID. You can find it in the PlainKey admin dashboard.
- * @param baseUrl - Set by default to https://api.plainkey.io/api. Change only for development purposes.
+ * @param baseUrl - Set by default to https://api.plainkey.io/browser. Change only for development purposes.
  */
 export class PlainKey {
   private readonly projectId: string
   private readonly baseUrl: string
 
-  constructor(projectId: string, baseUrl: string = "https://api.plainkey.io/api") {
+  constructor(projectId: string, baseUrl: string = "https://api.plainkey.io/browser") {
     if (!projectId) throw new Error("Project ID is required")
     if (!baseUrl) throw new Error("Base URL is required")
 
@@ -149,18 +149,11 @@ export class PlainKey {
    *
    * @param userToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
    * Do NOT store it in local storage, database, etc. Always keep it in memory.
-   *
-   * @param userIdentifier - An object with either the user's PlainKey User ID or their userName.
    */
-  async addPasskey(userToken: string, userIdentifier: UserIdentifier): Promise<AddPasskeyResult> {
+  async addPasskey(userToken: string): Promise<AddPasskeyResult> {
     try {
-      // Validate user identifier
-      if (!userIdentifier) throw new Error("User identifier is required")
-      if (!userIdentifier.userId && !userIdentifier.userName)
-        throw new Error("Either a userId or a userName is required")
-
       // Step 1: Get credential registration options from server
-      const beginParams: UserCredentialBeginRequest = { userToken, userIdentifier }
+      const beginParams: UserCredentialBeginRequest = { userToken }
       const beginResponse = await fetch(`${this.baseUrl}/user/credential/begin`, {
         method: "POST",
         headers: {
@@ -175,16 +168,10 @@ export class PlainKey {
         await this.parseResponse<UserCredentialBeginResponse>(beginResponse)
 
       // Step 2: Create credential using browser's WebAuthn API
-      const credential: RegistrationResponseJSON = await startRegistration({
-        optionsJSON: options
-      })
+      const credential: RegistrationResponseJSON = await startRegistration({ optionsJSON: options })
 
       // Step 3: Send credential to server for verification
-      const completeParams: UserCredentialCompleteRequest = {
-        userToken: beginParams.userToken,
-        userIdentifier: { userId: user.id },
-        credential
-      }
+      const completeParams: UserCredentialCompleteRequest = { credential }
 
       const completeResponse = await fetch(`${this.baseUrl}/user/credential/complete`, {
         method: "POST",

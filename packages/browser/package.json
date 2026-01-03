@@ -1,6 +1,6 @@
 {
   "name": "@plainkey/browser",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "PlainKey browser SDK for passkey registration, login and credential management",
   "type": "module",
   "main": "./dist/index.js",

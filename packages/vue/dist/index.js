@@ -4,7 +4,7 @@ import { PlainKey } from "@plainkey/browser";
 /**
 *
 * @param projectId - Your PlainKey project ID. You can find it in the PlainKey admin dashboard.
-* @param baseUrl - Set by default to https://api.plainkey.io/api. Change only for development purposes.
+* @param baseUrl - Set by default to https://api.plainkey.io/browser. Change only for development purposes.
 *
 * Docs: https://plainkey.io/docs
 *
@@ -36,11 +36,9 @@ function usePlainKey(projectId, baseUrl) {
 	*
 	* @param userToken - The user authentication token, obtained from login.
 	* Do NOT store it in local storage, database, etc. Always keep it in memory.
-	*
-	* @param userIdentifier - An object with either the user's PlainKey User ID or their userName.
 	*/
-	function addPasskey(userToken, userIdentifier) {
-		return plainKey.addPasskey(userToken, userIdentifier);
+	function addPasskey(userToken) {
+		return plainKey.addPasskey(userToken);
 	}
 	return {
 		authenticate,

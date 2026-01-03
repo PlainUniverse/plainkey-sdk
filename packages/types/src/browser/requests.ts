@@ -13,13 +13,10 @@ export type RegistrationCompleteRequest = {
 
 // Credential registration (adds passkey to existing user)
 export type UserCredentialBeginRequest = {
-  userToken?: string // Only for backend calls (backend uses Authorization header instead)
-  userIdentifier: UserIdentifier
+  userToken: string
 }
 
 export type UserCredentialCompleteRequest = {
-  userToken?: string // Only for backend calls (backend uses Authorization header instead)
-  userIdentifier: UserIdentifier
   credential: RegistrationResponseJSON
 }
 

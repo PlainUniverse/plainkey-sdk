@@ -8,7 +8,7 @@ import { AddPasskeyResult, AuthenticateResult, CreateUserWithPasskeyResult, User
  * Docs: https://plainkey.io/docs
  *
  * @param projectId - Your PlainKey project ID. You can find it in the PlainKey admin dashboard.
- * @param baseUrl - Set by default to https://api.plainkey.io/api. Change only for development purposes.
+ * @param baseUrl - Set by default to https://api.plainkey.io/browser. Change only for development purposes.
  */
 declare class PlainKey {
   private readonly projectId;
@@ -31,10 +31,8 @@ declare class PlainKey {
    *
    * @param userToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
    * Do NOT store it in local storage, database, etc. Always keep it in memory.
-   *
-   * @param userIdentifier - An object with either the user's PlainKey User ID or their userName.
    */
-  addPasskey(userToken: string, userIdentifier: UserIdentifier): Promise<AddPasskeyResult>;
+  addPasskey(userToken: string): Promise<AddPasskeyResult>;
   /**
    * Authenticates a user. Can be used for login, verification, 2FA, etc.
    * Will require user interaction to authenticate.

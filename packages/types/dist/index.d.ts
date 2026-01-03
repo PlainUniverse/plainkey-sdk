@@ -19,12 +19,9 @@ type RegistrationCompleteRequest = {
   credential: RegistrationResponseJSON$1;
 };
 type UserCredentialBeginRequest = {
-  userToken?: string;
-  userIdentifier: UserIdentifier;
+  userToken: string;
 };
 type UserCredentialCompleteRequest = {
-  userToken?: string;
-  userIdentifier: UserIdentifier;
   credential: RegistrationResponseJSON$1;
 };
 type LoginBeginRequest = {

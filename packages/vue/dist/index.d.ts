@@ -6,7 +6,7 @@ import { UserIdentifier } from "@plainkey/types";
 /**
  *
  * @param projectId - Your PlainKey project ID. You can find it in the PlainKey admin dashboard.
- * @param baseUrl - Set by default to https://api.plainkey.io/api. Change only for development purposes.
+ * @param baseUrl - Set by default to https://api.plainkey.io/browser. Change only for development purposes.
  *
  * Docs: https://plainkey.io/docs
  *
@@ -16,7 +16,7 @@ import { UserIdentifier } from "@plainkey/types";
 declare function usePlainKey(projectId: string, baseUrl?: string): {
   authenticate: (userIdentifier?: UserIdentifier) => Promise<_plainkey_types0.AuthenticateResult>;
   createUserWithPasskey: (userName?: string) => Promise<_plainkey_types0.CreateUserWithPasskeyResult>;
-  addPasskey: (userToken: string, userIdentifier: UserIdentifier) => Promise<_plainkey_types0.AddPasskeyResult>;
+  addPasskey: (userToken: string) => Promise<_plainkey_types0.AddPasskeyResult>;
 };
 //#endregion
 export { usePlainKey };
