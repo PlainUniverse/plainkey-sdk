@@ -171,7 +171,7 @@ export class PlainKey {
       const credential: RegistrationResponseJSON = await startRegistration({ optionsJSON: options })
 
       // Step 3: Send credential to server for verification
-      const completeParams: UserCredentialCompleteRequest = { credential }
+      const completeParams: UserCredentialCompleteRequest = { userToken, credential }
 
       const completeResponse = await fetch(`${this.baseUrl}/user/credential/complete`, {
         method: "POST",

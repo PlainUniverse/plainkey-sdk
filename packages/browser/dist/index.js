@@ -106,7 +106,10 @@ var PlainKey = class {
 				body: JSON.stringify(beginParams)
 			});
 			const { options, user } = await this.parseResponse(beginResponse);
-			const completeParams = { credential: await startRegistration({ optionsJSON: options }) };
+			const completeParams = {
+				userToken,
+				credential: await startRegistration({ optionsJSON: options })
+			};
 			const completeResponse = await fetch(`${this.baseUrl}/user/credential/complete`, {
 				method: "POST",
 				headers: {

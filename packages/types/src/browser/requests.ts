@@ -17,6 +17,7 @@ export type UserCredentialBeginRequest = {
 }
 
 export type UserCredentialCompleteRequest = {
+  userToken: string
   credential: RegistrationResponseJSON
 }
 

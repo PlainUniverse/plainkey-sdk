@@ -16,7 +16,12 @@
     "build:vue": "npm run build -w @plainkey/vue",
     "build": "npm run build:types && npm run build:browser && npm run build:server && npm run build:vue",
     "test": "npm run test --workspaces",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "publish:types": "npm publish --access public -w @plainkey/types",
+    "publish:browser": "npm publish --access public -w @plainkey/browser",
+    "publish:server": "npm publish --access public -w @plainkey/server",
+    "publish:vue": "npm publish --access public -w @plainkey/vue",
+    "publish": "npm run publish:types && npm run publish:browser && npm run publish:vue"
   },
   "dependencies": {
     "@eslint/css": "^0.11.1",

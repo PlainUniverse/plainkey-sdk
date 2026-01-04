@@ -22,6 +22,7 @@ type UserCredentialBeginRequest = {
   userToken: string;
 };
 type UserCredentialCompleteRequest = {
+  userToken: string;
   credential: RegistrationResponseJSON$1;
 };
 type LoginBeginRequest = {
