@@ -22,17 +22,17 @@ declare class PlainKey {
   /**
    * Registration of a new user with a passkey. Will require user interaction to create a passkey.
    *
-   * @param userName - A stable unique identifier for the user, like an email address or username.
+   * @param userName - A unique identifier for the user, like an email address or username.
    * Can be empty for usernameless authentication.
    */
   createUserWithPasskey(userName?: string): Promise<CreateUserWithPasskeyResult>;
   /**
    * Adds a passkey to an existing user. Will require user interaction to create a passkey.
    *
-   * @param userToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
+   * @param authenticationToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
    * Do NOT store it in local storage, database, etc. Always keep it in memory.
    */
-  addPasskey(userToken: string): Promise<AddPasskeyResult>;
+  addPasskey(authenticationToken: string): Promise<AddPasskeyResult>;
   /**
    * Authenticates a user. Can be used for login, verification, 2FA, etc.
    * Will require user interaction to authenticate.

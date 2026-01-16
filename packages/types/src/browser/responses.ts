@@ -1,4 +1,3 @@
-import { UserInfo } from "../common"
 import type {
   PublicKeyCredentialCreationOptionsJSON,
   PublicKeyCredentialRequestOptionsJSON
@@ -10,22 +9,22 @@ export type ErrorResponse = {
 }
 
 // Token
-export type IssuedToken = {
+export type AuthenticationToken = {
   token: string
   expiresInSeconds: number
   tokenType: string
 }
 
 // User Registration
-export type RegistrationBeginResponse = {
-  user: UserInfo
+export type UserRegisterBeginResponse = {
+  userId: string
   options: PublicKeyCredentialCreationOptionsJSON
 }
 
-export type RegistrationCompleteResponse = {
+export type UserRegisterCompleteResponse = {
   success: boolean
-  user: UserInfo
-  token: IssuedToken
+  userId: string
+  authenticationToken: AuthenticationToken
   credential: {
     id: string
     webAuthnId: string
@@ -34,24 +33,21 @@ export type RegistrationCompleteResponse = {
 
 // Credential registration
 export type UserCredentialBeginResponse = {
-  user: UserInfo
   options: PublicKeyCredentialCreationOptionsJSON
 }
 
 export type UserCredentialCompleteResponse = {
   success: boolean
-  user: UserInfo
-  token: IssuedToken
+  authenticationToken: AuthenticationToken
   credential: {
     id: string
     webAuthnId: string
   }
 }
 
-// Login
-export type LoginBeginResponse = {
+// Authentication
+export type AuthenticationBeginResponse = {
   projectId: string
-  userId?: string
   options: PublicKeyCredentialRequestOptionsJSON
   loginSession: {
     id: string
@@ -59,10 +55,8 @@ export type LoginBeginResponse = {
   }
 }
 
-export type LoginCompleteResponse = {
-  verified: boolean
-  user: UserInfo
-  token: IssuedToken
+export type AuthenticationCompleteResponse = {
+  authenticationToken: AuthenticationToken
 }
 
 // Re-export types for consumers

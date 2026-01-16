@@ -2,22 +2,22 @@ import { UserIdentifier } from "../common"
 import type { RegistrationResponseJSON, AuthenticationResponseJSON } from "@simplewebauthn/browser"
 
 // User Registration (creates new user + adds passkey)
-export type RegistrationBeginRequest = {
+export type UserRegisterBeginRequest = {
   userName?: string
 }
 
-export type RegistrationCompleteRequest = {
-  userIdentifier: UserIdentifier
+export type UserRegisterCompleteRequest = {
+  userId: string
   credential: RegistrationResponseJSON
 }
 
 // Credential registration (adds passkey to existing user)
 export type UserCredentialBeginRequest = {
-  userToken: string
+  authenticationToken: string
 }
 
 export type UserCredentialCompleteRequest = {
-  userToken: string
+  authenticationToken: string
   credential: RegistrationResponseJSON
 }
 

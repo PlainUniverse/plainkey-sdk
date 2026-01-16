@@ -37,11 +37,11 @@ export function usePlainKey(projectId: string, baseUrl?: string) {
   /**
    * Adds a passkey to an existing user. Will require user interaction to create a passkey.
    *
-   * @param userToken - The user authentication token, obtained from login.
+   * @param authenticationToken - The user authentication token, is returned from .authenticate() or createUserWithPasskey().
    * Do NOT store it in local storage, database, etc. Always keep it in memory.
    */
-  function addPasskey(userToken: string) {
-    return plainKey.addPasskey(userToken)
+  function addPasskey(authenticationToken: string) {
+    return plainKey.addPasskey(authenticationToken)
   }
 
   return {

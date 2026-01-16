@@ -2,8 +2,6 @@ import { startAuthentication, startRegistration } from "@simplewebauthn/browser"
 import { RegistrationResponseJSON, AuthenticationResponseJSON } from "@simplewebauthn/browser"
 
 import type {
-  RegistrationBeginRequest,
-  RegistrationCompleteRequest,
   UserCredentialBeginRequest,
   UserCredentialCompleteRequest,
   LoginBeginRequest,
@@ -11,17 +9,16 @@ import type {
   UserIdentifier,
   CreateUserWithPasskeyResult,
   AddPasskeyResult,
-  AuthenticateResult
+  AuthenticateResult,
+  UserRegisterBeginRequest,
+  UserRegisterBeginResponse,
+  UserRegisterCompleteRequest,
+  UserRegisterCompleteResponse,
+  AuthenticationCompleteResponse,
+  AuthenticationBeginResponse
 } from "@plainkey/types"
 
-import type {
-  RegistrationBeginResponse,
-  RegistrationCompleteResponse,
-  UserCredentialBeginResponse,
-  UserCredentialCompleteResponse,
-  LoginBeginResponse,
-  LoginCompleteResponse
-} from "@plainkey/types"
+import type { UserCredentialBeginResponse, UserCredentialCompleteResponse } from "@plainkey/types"
 
 /**
  * PlainKey client for the browser. Used to register new users, add passkeys to existing users, and log users in.
@@ -79,24 +76,24 @@ export class PlainKey {
   /**
    * Registration of a new user with a passkey. Will require user interaction to create a passkey.
    *
-   * @param userName - A stable unique identifier for the user, like an email address or username.
+   * @param userName - A unique identifier for the user, like an email address or username.
    * Can be empty for usernameless authentication.
    */
   async createUserWithPasskey(userName?: string): Promise<CreateUserWithPasskeyResult> {
     try {
       // Step 1: Get registration options from server
-      const beginParams: RegistrationBeginRequest = { userName }
+      const beginRequestBody: UserRegisterBeginRequest = { userName }
       const beginResponse = await fetch(`${this.baseUrl}/user/register/begin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "x-project-id": this.projectId
         },
-        body: JSON.stringify(beginParams)
+        body: JSON.stringify(beginRequestBody)
       })
 
       // Parse response JSON
-      const { options, user } = await this.parseResponse<RegistrationBeginResponse>(beginResponse)
+      const { userId, options } = await this.parseResponse<UserRegisterBeginResponse>(beginResponse)
 
       // Step 2: Create credential using browser's WebAuthn API
       const credential: RegistrationResponseJSON = await startRegistration({
@@ -104,23 +101,19 @@ export class PlainKey {
       })
 
       // Step 3: Send credential to server for verification
-      const completeParams: RegistrationCompleteRequest = {
-        userIdentifier: { userId: user.id },
-        credential
-      }
-
+      const completeRequestBody: UserRegisterCompleteRequest = { userId, credential }
       const completeResponse = await fetch(`${this.baseUrl}/user/register/complete`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "x-project-id": this.projectId
         },
-        body: JSON.stringify(completeParams)
+        body: JSON.stringify(completeRequestBody)
       })
 
       // Parse response JSON
-      const completeResponseData: RegistrationCompleteResponse =
-        await this.parseResponse<RegistrationCompleteResponse>(completeResponse)
+      const completeResponseData: UserRegisterCompleteResponse =
+        await this.parseResponse<UserRegisterCompleteResponse>(completeResponse)
 
       if (!completeResponseData.success) throw new Error("Server could not complete registration")
 
@@ -128,8 +121,8 @@ export class PlainKey {
       return {
         success: completeResponseData.success,
         data: {
-          user: completeResponseData.user,
-          token: completeResponseData.token,
+          userId: completeResponseData.userId,
+          authenticationToken: completeResponseData.authenticationToken,
           credential: completeResponseData.credential
         }
       }
@@ -147,13 +140,13 @@ export class PlainKey {
   /**
    * Adds a passkey to an existing user. Will require user interaction to create a passkey.
    *
-   * @param userToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
+   * @param authenticationToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
    * Do NOT store it in local storage, database, etc. Always keep it in memory.
    */
-  async addPasskey(userToken: string): Promise<AddPasskeyResult> {
+  async addPasskey(authenticationToken: string): Promise<AddPasskeyResult> {
     try {
       // Step 1: Get credential registration options from server
-      const beginParams: UserCredentialBeginRequest = { userToken }
+      const beginParams: UserCredentialBeginRequest = { authenticationToken }
       const beginResponse = await fetch(`${this.baseUrl}/user/credential/begin`, {
         method: "POST",
         headers: {
@@ -164,14 +157,14 @@ export class PlainKey {
       })
 
       // Parse response JSON
-      const { options, user }: UserCredentialBeginResponse =
+      const { options }: UserCredentialBeginResponse =
         await this.parseResponse<UserCredentialBeginResponse>(beginResponse)
 
       // Step 2: Create credential using browser's WebAuthn API
       const credential: RegistrationResponseJSON = await startRegistration({ optionsJSON: options })
 
       // Step 3: Send credential to server for verification
-      const completeParams: UserCredentialCompleteRequest = { userToken, credential }
+      const completeParams: UserCredentialCompleteRequest = { authenticationToken, credential }
 
       const completeResponse = await fetch(`${this.baseUrl}/user/credential/complete`, {
         method: "POST",
@@ -193,8 +186,7 @@ export class PlainKey {
       return {
         success: completeResponseData.success,
         data: {
-          user: completeResponseData.user,
-          token: completeResponseData.token,
+          authenticationToken: completeResponseData.authenticationToken,
           credential: completeResponseData.credential
         }
       }
@@ -230,8 +222,8 @@ export class PlainKey {
       })
 
       // Parse response JSON
-      const beginResponseData: LoginBeginResponse =
-        await this.parseResponse<LoginBeginResponse>(beginResponse)
+      const beginResponseData: AuthenticationBeginResponse =
+        await this.parseResponse<AuthenticationBeginResponse>(beginResponse)
 
       if (!beginResponseData.options)
         throw new Error("Server returned no options in login begin response")
@@ -251,7 +243,7 @@ export class PlainKey {
         authenticationResponse
       }
 
-      const verificationResponse = await fetch(`${this.baseUrl}/authenticate/complete`, {
+      const authenticateCompleteResponse = await fetch(`${this.baseUrl}/authenticate/complete`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -260,18 +252,14 @@ export class PlainKey {
         body: JSON.stringify(completeParams)
       })
 
-      const verificationResponseData: LoginCompleteResponse =
-        await this.parseResponse<LoginCompleteResponse>(verificationResponse)
-
-      if (!verificationResponseData.verified)
-        throw new Error("Server could not verify authentication")
+      const authCompleteResponseData: AuthenticationCompleteResponse =
+        await this.parseResponse<AuthenticationCompleteResponse>(authenticateCompleteResponse)
 
       // Return success
       return {
-        success: verificationResponseData.verified,
+        success: true,
         data: {
-          user: verificationResponseData.user,
-          token: verificationResponseData.token
+          authenticationToken: authCompleteResponseData.authenticationToken
         }
       }
     } catch (error) {
