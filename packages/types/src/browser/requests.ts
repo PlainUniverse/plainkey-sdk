@@ -13,7 +13,8 @@ export type UserRegisterCompleteRequest = {
 
 // Credential registration (adds passkey to existing user)
 export type UserCredentialBeginRequest = {
-  authenticationToken: string
+  authenticationToken: string,
+  userName?: string
 }
 
 export type UserCredentialCompleteRequest = {

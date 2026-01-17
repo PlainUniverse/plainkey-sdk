@@ -20,6 +20,7 @@ type UserRegisterCompleteRequest = {
 };
 type UserCredentialBeginRequest = {
   authenticationToken: string;
+  userName?: string;
 };
 type UserCredentialCompleteRequest = {
   authenticationToken: string;
@@ -39,8 +40,7 @@ type ErrorResponse = {
 };
 type AuthenticationToken = {
   token: string;
-  expiresInSeconds: number;
-  tokenType: string;
+  expiresAt: number;
 };
 type UserRegisterBeginResponse = {
   userId: string;

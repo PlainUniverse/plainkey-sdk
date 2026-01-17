@@ -91,11 +91,15 @@ var PlainKey = class {
 	* Adds a passkey to an existing user. Will require user interaction to create a passkey.
 	*
 	* @param authenticationToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
+	* @param userName - A unique identifier for the user, like an email address or username. If not provided, the user's stored userName will be used.
 	* Do NOT store it in local storage, database, etc. Always keep it in memory.
 	*/
-	async addPasskey(authenticationToken) {
+	async addPasskey(authenticationToken, userName) {
 		try {
-			const beginParams = { authenticationToken };
+			const beginParams = {
+				authenticationToken,
+				userName
+			};
 			const beginResponse = await fetch(`${this.baseUrl}/user/credential/begin`, {
 				method: "POST",
 				headers: {

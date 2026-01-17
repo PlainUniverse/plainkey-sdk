@@ -30,9 +30,10 @@ declare class PlainKey {
    * Adds a passkey to an existing user. Will require user interaction to create a passkey.
    *
    * @param authenticationToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
+   * @param userName - A unique identifier for the user, like an email address or username. If not provided, the user's stored userName will be used.
    * Do NOT store it in local storage, database, etc. Always keep it in memory.
    */
-  addPasskey(authenticationToken: string): Promise<AddPasskeyResult>;
+  addPasskey(authenticationToken: string, userName?: string): Promise<AddPasskeyResult>;
   /**
    * Authenticates a user. Can be used for login, verification, 2FA, etc.
    * Will require user interaction to authenticate.

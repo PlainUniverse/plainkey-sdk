@@ -39,9 +39,11 @@ export function usePlainKey(projectId: string, baseUrl?: string) {
    *
    * @param authenticationToken - The user authentication token, is returned from .authenticate() or createUserWithPasskey().
    * Do NOT store it in local storage, database, etc. Always keep it in memory.
+   * @param userName - A stable unique identifier for the user, like an email address or username.
+   * If not provided, the user's stored userName will be used.
    */
-  function addPasskey(authenticationToken: string) {
-    return plainKey.addPasskey(authenticationToken)
+  function addPasskey(authenticationToken: string, userName?: string) {
+    return plainKey.addPasskey(authenticationToken, userName)
   }
 
   return {

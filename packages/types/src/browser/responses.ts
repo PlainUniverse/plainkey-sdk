@@ -11,8 +11,7 @@ export type ErrorResponse = {
 // Token
 export type AuthenticationToken = {
   token: string
-  expiresInSeconds: number
-  tokenType: string
+  expiresAt: number
 }
 
 // User Registration

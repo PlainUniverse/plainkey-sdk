@@ -142,11 +142,13 @@ export class PlainKey {
    *
    * @param authenticationToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
    * Do NOT store it in local storage, database, etc. Always keep it in memory.
+   * @param userName - A unique identifier for the user, like an email address or username.
+   * If not provided, the user's stored userName will be used.
    */
-  async addPasskey(authenticationToken: string): Promise<AddPasskeyResult> {
+  async addPasskey(authenticationToken: string, userName?: string): Promise<AddPasskeyResult> {
     try {
       // Step 1: Get credential registration options from server
-      const beginParams: UserCredentialBeginRequest = { authenticationToken }
+      const beginParams: UserCredentialBeginRequest = { authenticationToken, userName }
       const beginResponse = await fetch(`${this.baseUrl}/user/credential/begin`, {
         method: "POST",
         headers: {
@@ -159,7 +161,7 @@ export class PlainKey {
       // Parse response JSON
       const { options }: UserCredentialBeginResponse =
         await this.parseResponse<UserCredentialBeginResponse>(beginResponse)
-
+      
       // Step 2: Create credential using browser's WebAuthn API
       const credential: RegistrationResponseJSON = await startRegistration({ optionsJSON: options })
 
