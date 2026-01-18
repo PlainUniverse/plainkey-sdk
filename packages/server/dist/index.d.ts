@@ -1,4 +1,4 @@
-import { AccessTokenResponse, VerifyAuthTokenResponse } from "@plainkey/types";
+import { AccessTokenResponse, VerifyAuthenticationTokenResponse } from "@plainkey/types";
 
 //#region src/plainKeyServer.d.ts
 declare class PlainKeyServer {
@@ -13,11 +13,11 @@ declare class PlainKeyServer {
   private parseResponse;
   /**
    * Exchanges project credentials for a short-lived project access token.
-   * This token is required to call authenticated PlainKey Server APIs.
+   * This token is required to call the PlainKey Server API's.
    */
   accessToken(): Promise<AccessTokenResponse>;
   /**
-   * Verifies a user authentication token.
+   * Verifies a user authentication token and returns the  authenticateduser's PlainKey User ID.
    *
    * @param accessToken - The project access token (obtained from {@link PlainKeyServer.accessToken}).
    * @param params - The parameters for the request.
@@ -26,8 +26,8 @@ declare class PlainKeyServer {
    *
    */
   verifyAuthenticationToken(accessToken: string, params: {
-    token: string;
-  }): Promise<VerifyAuthTokenResponse>;
+    authenticationToken: string;
+  }): Promise<VerifyAuthenticationTokenResponse>;
 }
 //#endregion
 export { PlainKeyServer };

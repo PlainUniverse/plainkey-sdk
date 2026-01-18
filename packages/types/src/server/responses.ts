@@ -6,7 +6,7 @@ export type AccessTokenResponse = {
   expires_in: number
 }
 
-export type VerifyAuthTokenResponse = {
+export type VerifyAuthenticationTokenResponse = {
   valid: boolean
   error: string
   expiresAt: string

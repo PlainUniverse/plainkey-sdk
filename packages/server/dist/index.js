@@ -35,7 +35,7 @@ var PlainKeyServer = class {
 	}
 	/**
 	* Exchanges project credentials for a short-lived project access token.
-	* This token is required to call authenticated PlainKey Server APIs.
+	* This token is required to call the PlainKey Server API's.
 	*/
 	async accessToken() {
 		const body = new URLSearchParams({
@@ -50,7 +50,7 @@ var PlainKeyServer = class {
 		return await this.parseResponse(response);
 	}
 	/**
-	* Verifies a user authentication token.
+	* Verifies a user authentication token and returns the  authenticateduser's PlainKey User ID.
 	*
 	* @param accessToken - The project access token (obtained from {@link PlainKeyServer.accessToken}).
 	* @param params - The parameters for the request.

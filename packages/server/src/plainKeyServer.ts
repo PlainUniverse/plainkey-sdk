@@ -1,4 +1,4 @@
-import { AccessTokenResponse, VerifyAuthTokenResponse } from "@plainkey/types"
+import { AccessTokenResponse, VerifyAuthenticationTokenResponse } from "@plainkey/types"
 
 export class PlainKeyServer {
   private readonly projectId: string
@@ -62,7 +62,7 @@ export class PlainKeyServer {
 
   /**
    * Exchanges project credentials for a short-lived project access token.
-   * This token is required to call authenticated PlainKey Server APIs.
+   * This token is required to call the PlainKey Server API's.
    */
   async accessToken(): Promise<AccessTokenResponse> {
     const body = new URLSearchParams({
@@ -80,7 +80,7 @@ export class PlainKeyServer {
   }
 
   /**
-   * Verifies a user authentication token.
+   * Verifies a user authentication token and returns the  authenticateduser's PlainKey User ID.
    *
    * @param accessToken - The project access token (obtained from {@link PlainKeyServer.accessToken}).
    * @param params - The parameters for the request.
@@ -90,8 +90,8 @@ export class PlainKeyServer {
    */
   async verifyAuthenticationToken(
     accessToken: string,
-    params: { token: string }
-  ): Promise<VerifyAuthTokenResponse> {
+    params: { authenticationToken: string }
+  ): Promise<VerifyAuthenticationTokenResponse> {
     const response = await fetch(`${this.baseUrl}/authentication-token/verify`, {
       method: "POST",
       headers: {
@@ -102,6 +102,8 @@ export class PlainKeyServer {
     })
 
     const acceptedErrorCodes = [401]
-    return this.parseResponse<VerifyAuthTokenResponse>(response, acceptedErrorCodes)
+    return this.parseResponse<VerifyAuthenticationTokenResponse>(response, acceptedErrorCodes)
   }
+
+  // TODO: Begin passkey registration
 }
