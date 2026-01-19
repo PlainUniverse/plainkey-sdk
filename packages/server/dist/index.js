@@ -50,13 +50,14 @@ var PlainKeyServer = class {
 		return await this.parseResponse(response);
 	}
 	/**
-	* Verifies a user authentication token and returns the  authenticateduser's PlainKey User ID.
+	* Verifies a user authentication token.
+	* If the token is valid, it returns the authenticated user's PlainKey User ID.
+	* If the token is invalid, it throws an error.
 	*
 	* @param accessToken - The project access token (obtained from {@link PlainKeyServer.accessToken}).
-	* @param params - The parameters for the request.
-	* @param params.token - The authentication token to verify.
-	* @returns The authentication token verification response.
-	*
+	* @param params - Parameter object for the request.
+	* @param params.authenticationToken - The authentication token to verify.
+	* @returns An object containing the authenticated user's PlainKey User ID.
 	*/
 	async verifyAuthenticationToken(accessToken, params) {
 		const response = await fetch(`${this.baseUrl}/authentication-token/verify`, {
@@ -67,7 +68,9 @@ var PlainKeyServer = class {
 			},
 			body: JSON.stringify(params)
 		});
-		return this.parseResponse(response, [401]);
+		const responseData = await this.parseResponse(response, [401]);
+		if (!responseData.valid) throw new Error(responseData.error ?? "Invalid authentication token.");
+		return { userId: responseData.user.id };
 	}
 };
 

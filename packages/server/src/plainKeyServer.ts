@@ -1,4 +1,8 @@
-import { AccessTokenResponse, VerifyAuthenticationTokenResponse } from "@plainkey/types"
+import {
+  AccessTokenResponse,
+  VerifyAuthenticationTokenResponse,
+  VerifyAuthenticationTokenResult
+} from "@plainkey/types"
 
 export class PlainKeyServer {
   private readonly projectId: string
@@ -80,18 +84,19 @@ export class PlainKeyServer {
   }
 
   /**
-   * Verifies a user authentication token and returns the  authenticateduser's PlainKey User ID.
+   * Verifies a user authentication token.
+   * If the token is valid, it returns the authenticated user's PlainKey User ID.
+   * If the token is invalid, it throws an error.
    *
    * @param accessToken - The project access token (obtained from {@link PlainKeyServer.accessToken}).
-   * @param params - The parameters for the request.
-   * @param params.token - The authentication token to verify.
-   * @returns The authentication token verification response.
-   *
+   * @param params - Parameter object for the request.
+   * @param params.authenticationToken - The authentication token to verify.
+   * @returns An object containing the authenticated user's PlainKey User ID.
    */
   async verifyAuthenticationToken(
     accessToken: string,
     params: { authenticationToken: string }
-  ): Promise<VerifyAuthenticationTokenResponse> {
+  ): Promise<VerifyAuthenticationTokenResult> {
     const response = await fetch(`${this.baseUrl}/authentication-token/verify`, {
       method: "POST",
       headers: {
@@ -102,7 +107,17 @@ export class PlainKeyServer {
     })
 
     const acceptedErrorCodes = [401]
-    return this.parseResponse<VerifyAuthenticationTokenResponse>(response, acceptedErrorCodes)
+    const responseData = await this.parseResponse<VerifyAuthenticationTokenResponse>(
+      response,
+      acceptedErrorCodes
+    )
+
+    if (!responseData.valid) {
+      throw new Error(responseData.error ?? "Invalid authentication token.")
+    }
+
+    // Authentication token is valid
+    return { userId: responseData.user.id }
   }
 
   // TODO: Begin passkey registration

@@ -134,5 +134,10 @@ type VerifyAuthenticationTokenResponse = {
   payload: Record<string, unknown>;
 };
 //#endregion
-export { AccessTokenResponse, AddPasskeyResult, AuthenticateResult, AuthenticationBeginResponse, AuthenticationCompleteResponse, type AuthenticationResponseJSON, AuthenticationToken, CreateUserWithPasskeyResult, CredentialInfo, ErrorResponse, LoginBeginRequest, LoginCompleteRequest, type PublicKeyCredentialCreationOptionsJSON, type PublicKeyCredentialRequestOptionsJSON, type RegistrationResponseJSON, UserCredentialBeginRequest, UserCredentialBeginResponse, UserCredentialCompleteRequest, UserCredentialCompleteResponse, UserIdentifier, UserInfo, UserRegisterBeginRequest, UserRegisterBeginResponse, UserRegisterCompleteRequest, UserRegisterCompleteResponse, VerifyAuthTokenRequest, VerifyAuthenticationTokenResponse };
+//#region src/server/result.d.ts
+type VerifyAuthenticationTokenResult = {
+  userId: string;
+};
+//#endregion
+export { AccessTokenResponse, AddPasskeyResult, AuthenticateResult, AuthenticationBeginResponse, AuthenticationCompleteResponse, type AuthenticationResponseJSON, AuthenticationToken, CreateUserWithPasskeyResult, CredentialInfo, ErrorResponse, LoginBeginRequest, LoginCompleteRequest, type PublicKeyCredentialCreationOptionsJSON, type PublicKeyCredentialRequestOptionsJSON, type RegistrationResponseJSON, UserCredentialBeginRequest, UserCredentialBeginResponse, UserCredentialCompleteRequest, UserCredentialCompleteResponse, UserIdentifier, UserInfo, UserRegisterBeginRequest, UserRegisterBeginResponse, UserRegisterCompleteRequest, UserRegisterCompleteResponse, VerifyAuthTokenRequest, VerifyAuthenticationTokenResponse, VerifyAuthenticationTokenResult };
 //# sourceMappingURL=index.d.ts.map
