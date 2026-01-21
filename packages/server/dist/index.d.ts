@@ -1,10 +1,11 @@
-import { AccessTokenResponse, VerifyAuthenticationTokenResult } from "@plainkey/types";
+import { VerifyAuthenticationTokenResult } from "@plainkey/types";
 
 //#region src/plainKeyServer.d.ts
 declare class PlainKeyServer {
   private readonly projectId;
   private readonly projectSecret;
   private readonly baseUrl;
+  private accessToken?;
   constructor(projectId: string, projectSecret: string, baseUrl?: string);
   /**
    * Helper to parse response JSON.
@@ -12,23 +13,26 @@ declare class PlainKeyServer {
    */
   private parseResponse;
   /**
-   * Exchanges project credentials for a short-lived project access token.
-   * This token is required to call the PlainKey Server API's.
+   * Fetches a new access token from the server and sets it in the instance variable.
+   * @returns The access token object that was set in or retreived from the instance variable.
    */
-  accessToken(): Promise<AccessTokenResponse>;
+  private ensureAccessToken;
+  /**
+   * Returns the default headers to use for all requests.
+   * Includes the content type and the access token.
+   * It makes sure to fetch a new access token if one is not already set.
+   * @returns The default headers to use for all requests.
+   */
+  private defaultRequestHeaders;
   /**
    * Verifies a user authentication token.
    * If the token is valid, it returns the authenticated user's PlainKey User ID.
-   * If the token is invalid, it throws an error.
    *
-   * @param accessToken - The project access token (obtained from {@link PlainKeyServer.accessToken}).
-   * @param params - Parameter object for the request.
-   * @param params.authenticationToken - The authentication token to verify.
-   * @returns An object containing the authenticated user's PlainKey User ID.
+   * @param authenticationToken - The authentication token to verify.
+   * @returns On success, an object containing the authenticated user's PlainKey User ID.
+   * On failure, throws an error.
    */
-  verifyAuthenticationToken(accessToken: string, params: {
-    authenticationToken: string;
-  }): Promise<VerifyAuthenticationTokenResult>;
+  verifyAuthenticationToken(authenticationToken: string): Promise<VerifyAuthenticationTokenResult>;
 }
 //#endregion
 export { PlainKeyServer };

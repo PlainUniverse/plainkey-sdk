@@ -4,10 +4,18 @@ import {
   VerifyAuthenticationTokenResult
 } from "@plainkey/types"
 
+type AccessToken = {
+  access_token: string
+
+  // Calculated from expires_in. Will not be exact due to request time.
+  expires_at: Date
+}
+
 export class PlainKeyServer {
   private readonly projectId: string
   private readonly projectSecret: string
   private readonly baseUrl: string
+  private accessToken?: AccessToken
 
   constructor(
     projectId: string,
@@ -65,53 +73,83 @@ export class PlainKeyServer {
   }
 
   /**
-   * Exchanges project credentials for a short-lived project access token.
-   * This token is required to call the PlainKey Server API's.
+   * Fetches a new access token from the server and sets it in the instance variable.
+   * @returns The access token object that was set in or retreived from the instance variable.
    */
-  async accessToken(): Promise<AccessTokenResponse> {
-    const body = new URLSearchParams({
-      client_id: this.projectId,
-      client_secret: this.projectSecret
-    })
+  private async ensureAccessToken(): Promise<AccessToken> {
+    // We only fetch a new access token if none is set or it is close to expiration/have been expired.
+    // Expiration should be 60 minutes. Grace period: 10 minutes.
+    const gracePeriodDate = new Date(Date.now() + 10 * 60 * 1000)
 
+    if (this.accessToken && this.accessToken.expires_at > gracePeriodDate) {
+      return this.accessToken
+    }
+
+    // Fetch the access token from the PlainKey Server API.
     const response = await fetch(`${this.baseUrl}/access-token`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body
+      body: new URLSearchParams({
+        client_id: this.projectId,
+        client_secret: this.projectSecret
+      })
     })
 
-    return await this.parseResponse<AccessTokenResponse>(response)
+    // Parse the response data
+    const responseData: AccessTokenResponse =
+      await this.parseResponse<AccessTokenResponse>(response)
+
+    // Make into the internal access token object.
+    const accessToken: AccessToken = {
+      access_token: responseData.access_token,
+      expires_at: new Date(Date.now() + responseData.expires_in * 1000)
+    }
+
+    // Set the access token in the instance variable
+    this.accessToken = accessToken
+    return accessToken
+  }
+
+  /**
+   * Returns the default headers to use for all requests.
+   * Includes the content type and the access token.
+   * It makes sure to fetch a new access token if one is not already set.
+   * @returns The default headers to use for all requests.
+   */
+  private async defaultRequestHeaders(): Promise<Headers> {
+    const accessToken: AccessToken = await this.ensureAccessToken()
+    return new Headers({
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken.access_token}`
+    })
   }
 
   /**
    * Verifies a user authentication token.
    * If the token is valid, it returns the authenticated user's PlainKey User ID.
-   * If the token is invalid, it throws an error.
    *
-   * @param accessToken - The project access token (obtained from {@link PlainKeyServer.accessToken}).
-   * @param params - Parameter object for the request.
-   * @param params.authenticationToken - The authentication token to verify.
-   * @returns An object containing the authenticated user's PlainKey User ID.
+   * @param authenticationToken - The authentication token to verify.
+   * @returns On success, an object containing the authenticated user's PlainKey User ID.
+   * On failure, throws an error.
    */
   async verifyAuthenticationToken(
-    accessToken: string,
-    params: { authenticationToken: string }
+    authenticationToken: string
   ): Promise<VerifyAuthenticationTokenResult> {
+    // Verify the authentication token with the PlainKey Server API.
     const response = await fetch(`${this.baseUrl}/authentication-token/verify`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`
-      },
-      body: JSON.stringify(params)
+      headers: await this.defaultRequestHeaders(),
+      body: JSON.stringify({ authenticationToken })
     })
 
+    // Parse the response data
     const acceptedErrorCodes = [401]
     const responseData = await this.parseResponse<VerifyAuthenticationTokenResponse>(
       response,
       acceptedErrorCodes
     )
 
+    // If the authentication token is invalid, throw an error.
     if (!responseData.valid) {
       throw new Error(responseData.error ?? "Invalid authentication token.")
     }
