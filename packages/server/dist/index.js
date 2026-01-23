@@ -86,7 +86,7 @@ var PlainKeyServer = class {
 		});
 		const responseData = await this.parseResponse(response, [401]);
 		if (!responseData.valid) throw new Error(responseData.error ?? "Invalid authentication token.");
-		return { userId: responseData.user.id };
+		return { userId: responseData.userId };
 	}
 };
 

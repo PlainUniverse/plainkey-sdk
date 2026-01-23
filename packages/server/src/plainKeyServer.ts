@@ -151,13 +151,13 @@ export class PlainKeyServer {
       acceptedErrorCodes
     )
 
-    // If the authentication token is invalid, throw an error.
+    // Throw error on invalid authentication token
     if (!responseData.valid) {
       throw new Error(responseData.error ?? "Invalid authentication token.")
     }
 
     // Authentication token is valid
-    return { userId: responseData.user.id }
+    return { userId: responseData.userId }
   }
 
   // TODO: Begin passkey registration

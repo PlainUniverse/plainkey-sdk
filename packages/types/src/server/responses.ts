@@ -11,6 +11,6 @@ export type VerifyAuthenticationTokenResponse = {
   error: string
   expiresAt: string
   projectId: string
-  user: UserInfo
+  userId: string
   payload: Record<string, unknown>
 }
