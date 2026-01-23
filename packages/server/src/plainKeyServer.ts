@@ -111,16 +111,18 @@ export class PlainKeyServer {
   }
 
   /**
-   * Returns the default headers to use for all requests.
+   * Returns the default headers to use for all server API requests using the access token.
    * Includes the content type and the access token.
    * It makes sure to fetch a new access token if one is not already set.
    * @returns The default headers to use for all requests.
    */
   private async defaultRequestHeaders(): Promise<Headers> {
     const accessToken: AccessToken = await this.ensureAccessToken()
+
     return new Headers({
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken.access_token}`
+      Authorization: `Bearer ${accessToken.access_token}`,
+      "x-project-id": this.projectId
     })
   }
 

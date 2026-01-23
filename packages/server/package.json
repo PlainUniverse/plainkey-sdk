@@ -1,6 +1,6 @@
 {
   "name": "@plainkey/server",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "PlainKey TypeScript Server SDK",
   "type": "module",
   "main": "./dist/index.js",

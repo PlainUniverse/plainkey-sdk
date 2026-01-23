@@ -18,7 +18,7 @@ declare class PlainKeyServer {
    */
   private ensureAccessToken;
   /**
-   * Returns the default headers to use for all requests.
+   * Returns the default headers to use for all server API requests using the access token.
    * Includes the content type and the access token.
    * It makes sure to fetch a new access token if one is not already set.
    * @returns The default headers to use for all requests.
