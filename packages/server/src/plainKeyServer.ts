@@ -139,7 +139,7 @@ export class PlainKeyServer {
     const response = await fetch(`${this.baseUrl}/authentication-token/verify`, {
       method: "POST",
       headers: await this.defaultRequestHeaders(),
-      body: JSON.stringify({ authenticationToken })
+      body: JSON.stringify({ token: authenticationToken })
     })
 
     // Parse the response data

@@ -81,7 +81,7 @@ var PlainKeyServer = class {
 		const response = await fetch(`${this.baseUrl}/authentication-token/verify`, {
 			method: "POST",
 			headers: await this.defaultRequestHeaders(),
-			body: JSON.stringify({ authenticationToken })
+			body: JSON.stringify({ token: authenticationToken })
 		});
 		const responseData = await this.parseResponse(response, [401]);
 		if (!responseData.valid) throw new Error(responseData.error ?? "Invalid authentication token.");
