@@ -24,10 +24,7 @@ export type UserRegisterCompleteResponse = {
   success: boolean
   userId: string
   authenticationToken: AuthenticationToken
-  credential: {
-    id: string
-    webAuthnId: string
-  }
+  credentialId: string
 }
 
 // Credential registration
@@ -38,10 +35,7 @@ export type UserCredentialBeginResponse = {
 export type UserCredentialCompleteResponse = {
   success: boolean
   authenticationToken: AuthenticationToken
-  credential: {
-    id: string
-    webAuthnId: string
-  }
+  credentialId: string
 }
 
 // Authentication

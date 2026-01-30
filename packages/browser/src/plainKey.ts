@@ -15,7 +15,9 @@ import type {
   UserRegisterCompleteRequest,
   UserRegisterCompleteResponse,
   AuthenticationCompleteResponse,
-  AuthenticationBeginResponse
+  AuthenticationBeginResponse,
+  CredentialLabelUpdateRequest,
+  UpdatePasskeyLabelResult
 } from "@plainkey/types"
 
 import type { UserCredentialBeginResponse, UserCredentialCompleteResponse } from "@plainkey/types"
@@ -123,7 +125,7 @@ export class PlainKey {
         data: {
           userId: completeResponseData.userId,
           authenticationToken: completeResponseData.authenticationToken,
-          credential: completeResponseData.credential
+          credentialId: completeResponseData.credentialId
         }
       }
     } catch (error) {
@@ -146,6 +148,8 @@ export class PlainKey {
    * If not provided, the user's stored userName will be used.
    */
   async addPasskey(authenticationToken: string, userName?: string): Promise<AddPasskeyResult> {
+    if (!authenticationToken) throw new Error("Authentication token is required")
+
     try {
       // Step 1: Get credential registration options from server
       const beginParams: UserCredentialBeginRequest = { authenticationToken, userName }
@@ -161,7 +165,7 @@ export class PlainKey {
       // Parse response JSON
       const { options }: UserCredentialBeginResponse =
         await this.parseResponse<UserCredentialBeginResponse>(beginResponse)
-      
+
       // Step 2: Create credential using browser's WebAuthn API
       const credential: RegistrationResponseJSON = await startRegistration({ optionsJSON: options })
 
@@ -189,7 +193,7 @@ export class PlainKey {
         success: completeResponseData.success,
         data: {
           authenticationToken: completeResponseData.authenticationToken,
-          credential: completeResponseData.credential
+          credentialId: completeResponseData.credentialId
         }
       }
     } catch (error) {
@@ -199,6 +203,46 @@ export class PlainKey {
         error: {
           message: error instanceof Error ? error.message : "Unknown error"
         }
+      }
+    }
+  }
+
+  /**
+   * Updates a passkey label. Requires authentication shortly before this call. Any passkey registered to the user can be updated.
+   * @param authenticationToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
+   * Do NOT store it in local storage, database, etc. Always keep it in memory.
+   * @param credentialId - The ID of the passkey credential to update. Is returned from createUserWithPasskey() and addPasskey().
+   * @param label - The new label for the passkey.
+   */
+  async updatePasskeyLabel(
+    authenticationToken: string,
+    credentialId: string,
+    label: string
+  ): Promise<UpdatePasskeyLabelResult> {
+    if (!authenticationToken) throw new Error("Authentication token is required")
+    if (!credentialId) throw new Error("Credential ID is required")
+    // Empty label is allowed
+
+    try {
+      const updateLabelParams: CredentialLabelUpdateRequest = { authenticationToken, label }
+      const updateLabelResponse = await fetch(`${this.baseUrl}/credential/${credentialId}/label`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "x-project-id": this.projectId
+        },
+        body: JSON.stringify(updateLabelParams)
+      })
+
+      if (!updateLabelResponse.ok) throw new Error("Failed to update passkey label")
+
+      // Return success
+      return { success: true }
+    } catch (error) {
+      // Return error
+      return {
+        success: false,
+        error: { message: error instanceof Error ? error.message : "Unknown error" }
       }
     }
   }

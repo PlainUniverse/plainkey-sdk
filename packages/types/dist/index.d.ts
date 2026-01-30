@@ -26,6 +26,10 @@ type UserCredentialCompleteRequest = {
   authenticationToken: string;
   credential: RegistrationResponseJSON$1;
 };
+type CredentialLabelUpdateRequest = {
+  authenticationToken: string;
+  label: string;
+};
 type LoginBeginRequest = {
   userIdentifier?: UserIdentifier;
 };
@@ -50,10 +54,7 @@ type UserRegisterCompleteResponse = {
   success: boolean;
   userId: string;
   authenticationToken: AuthenticationToken;
-  credential: {
-    id: string;
-    webAuthnId: string;
-  };
+  credentialId: string;
 };
 type UserCredentialBeginResponse = {
   options: PublicKeyCredentialCreationOptionsJSON$1;
@@ -61,10 +62,7 @@ type UserCredentialBeginResponse = {
 type UserCredentialCompleteResponse = {
   success: boolean;
   authenticationToken: AuthenticationToken;
-  credential: {
-    id: string;
-    webAuthnId: string;
-  };
+  credentialId: string;
 };
 type AuthenticationBeginResponse = {
   projectId: string;
@@ -79,10 +77,6 @@ type AuthenticationCompleteResponse = {
 };
 //#endregion
 //#region src/browser/result.d.ts
-interface CredentialInfo {
-  id: string;
-  webAuthnId: string;
-}
 interface AuthenticateResult {
   success: boolean;
   data?: {
@@ -96,8 +90,8 @@ interface CreateUserWithPasskeyResult {
   success: boolean;
   data?: {
     userId: string;
+    credentialId: string;
     authenticationToken: AuthenticationToken;
-    credential: CredentialInfo;
   };
   error?: {
     message: string;
@@ -106,9 +100,15 @@ interface CreateUserWithPasskeyResult {
 interface AddPasskeyResult {
   success: boolean;
   data?: {
+    credentialId: string;
     authenticationToken: AuthenticationToken;
-    credential: CredentialInfo;
   };
+  error?: {
+    message: string;
+  };
+}
+interface UpdatePasskeyLabelResult {
+  success: boolean;
   error?: {
     message: string;
   };
@@ -139,5 +139,5 @@ type VerifyAuthenticationTokenResult = {
   userId: string;
 };
 //#endregion
-export { AccessTokenResponse, AddPasskeyResult, AuthenticateResult, AuthenticationBeginResponse, AuthenticationCompleteResponse, type AuthenticationResponseJSON, AuthenticationToken, CreateUserWithPasskeyResult, CredentialInfo, ErrorResponse, LoginBeginRequest, LoginCompleteRequest, type PublicKeyCredentialCreationOptionsJSON, type PublicKeyCredentialRequestOptionsJSON, type RegistrationResponseJSON, UserCredentialBeginRequest, UserCredentialBeginResponse, UserCredentialCompleteRequest, UserCredentialCompleteResponse, UserIdentifier, UserInfo, UserRegisterBeginRequest, UserRegisterBeginResponse, UserRegisterCompleteRequest, UserRegisterCompleteResponse, VerifyAuthTokenRequest, VerifyAuthenticationTokenResponse, VerifyAuthenticationTokenResult };
+export { AccessTokenResponse, AddPasskeyResult, AuthenticateResult, AuthenticationBeginResponse, AuthenticationCompleteResponse, type AuthenticationResponseJSON, AuthenticationToken, CreateUserWithPasskeyResult, CredentialLabelUpdateRequest, ErrorResponse, LoginBeginRequest, LoginCompleteRequest, type PublicKeyCredentialCreationOptionsJSON, type PublicKeyCredentialRequestOptionsJSON, type RegistrationResponseJSON, UpdatePasskeyLabelResult, UserCredentialBeginRequest, UserCredentialBeginResponse, UserCredentialCompleteRequest, UserCredentialCompleteResponse, UserIdentifier, UserInfo, UserRegisterBeginRequest, UserRegisterBeginResponse, UserRegisterCompleteRequest, UserRegisterCompleteResponse, VerifyAuthTokenRequest, VerifyAuthenticationTokenResponse, VerifyAuthenticationTokenResult };
 //# sourceMappingURL=index.d.ts.map

@@ -91,10 +91,12 @@ var PlainKey = class {
 	* Adds a passkey to an existing user. Will require user interaction to create a passkey.
 	*
 	* @param authenticationToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
-	* @param userName - A unique identifier for the user, like an email address or username. If not provided, the user's stored userName will be used.
 	* Do NOT store it in local storage, database, etc. Always keep it in memory.
+	* @param userName - A unique identifier for the user, like an email address or username.
+	* If not provided, the user's stored userName will be used.
 	*/
 	async addPasskey(authenticationToken, userName) {
+		if (!authenticationToken) throw new Error("Authentication token is required");
 		try {
 			const beginParams = {
 				authenticationToken,
@@ -130,6 +132,38 @@ var PlainKey = class {
 					credential: completeResponseData.credential
 				}
 			};
+		} catch (error) {
+			return {
+				success: false,
+				error: { message: error instanceof Error ? error.message : "Unknown error" }
+			};
+		}
+	}
+	/**
+	* Updates a passkey label. Requires authentication shortly before this call. Any passkey registered to the user can be updated.
+	* @param authenticationToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
+	* Do NOT store it in local storage, database, etc. Always keep it in memory.
+	* @param credentialId - The ID of the passkey credential to update.
+	* Is returned as "credential.id" from SDK methods that registers a passkey.
+	* @param label - The new label for the passkey.
+	*/
+	async updatePasskeyLabel(authenticationToken, credentialId, label) {
+		if (!authenticationToken) throw new Error("Authentication token is required");
+		if (!credentialId) throw new Error("Credential ID is required");
+		try {
+			const updateLabelParams = {
+				authenticationToken,
+				label
+			};
+			if (!(await fetch(`${this.baseUrl}/credential/${credentialId}/label`, {
+				method: "PATCH",
+				headers: {
+					"Content-Type": "application/json",
+					"x-project-id": this.projectId
+				},
+				body: JSON.stringify(updateLabelParams)
+			})).ok) throw new Error("Failed to update passkey label");
+			return { success: true };
 		} catch (error) {
 			return {
 				success: false,
