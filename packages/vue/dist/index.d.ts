@@ -16,7 +16,7 @@ import { UserIdentifier } from "@plainkey/types";
 declare function usePlainKey(projectId: string, baseUrl?: string): {
   authenticate: (userIdentifier?: UserIdentifier) => Promise<_plainkey_types0.AuthenticateResult>;
   createUserWithPasskey: (userName?: string) => Promise<_plainkey_types0.CreateUserWithPasskeyResult>;
-  addPasskey: (authenticationToken: string) => Promise<_plainkey_types0.AddPasskeyResult>;
+  addPasskey: (authenticationToken: string, userName?: string) => Promise<_plainkey_types0.AddPasskeyResult>;
 };
 //#endregion
 export { usePlainKey };

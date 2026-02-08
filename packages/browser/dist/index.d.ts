@@ -1,4 +1,4 @@
-import { AddPasskeyResult, AuthenticateResult, CreateUserWithPasskeyResult, UserIdentifier } from "@plainkey/types";
+import { AddPasskeyResult, AuthenticateResult, CreateUserWithPasskeyResult, UpdatePasskeyLabelResult, UserIdentifier } from "@plainkey/types";
 
 //#region src/plainKey.d.ts
 
@@ -39,8 +39,7 @@ declare class PlainKey {
    * Updates a passkey label. Requires authentication shortly before this call. Any passkey registered to the user can be updated.
    * @param authenticationToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
    * Do NOT store it in local storage, database, etc. Always keep it in memory.
-   * @param credentialId - The ID of the passkey credential to update.
-   * Is returned as "credential.id" from SDK methods that registers a passkey.
+   * @param credentialId - The ID of the passkey credential to update. Is returned from createUserWithPasskey() and addPasskey().
    * @param label - The new label for the passkey.
    */
   updatePasskeyLabel(authenticationToken: string, credentialId: string, label: string): Promise<UpdatePasskeyLabelResult>;

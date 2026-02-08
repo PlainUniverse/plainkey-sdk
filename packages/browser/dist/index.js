@@ -77,7 +77,7 @@ var PlainKey = class {
 				data: {
 					userId: completeResponseData.userId,
 					authenticationToken: completeResponseData.authenticationToken,
-					credential: completeResponseData.credential
+					credentialId: completeResponseData.credentialId
 				}
 			};
 		} catch (error) {
@@ -129,7 +129,7 @@ var PlainKey = class {
 				success: completeResponseData.success,
 				data: {
 					authenticationToken: completeResponseData.authenticationToken,
-					credential: completeResponseData.credential
+					credentialId: completeResponseData.credentialId
 				}
 			};
 		} catch (error) {
@@ -143,8 +143,7 @@ var PlainKey = class {
 	* Updates a passkey label. Requires authentication shortly before this call. Any passkey registered to the user can be updated.
 	* @param authenticationToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
 	* Do NOT store it in local storage, database, etc. Always keep it in memory.
-	* @param credentialId - The ID of the passkey credential to update.
-	* Is returned as "credential.id" from SDK methods that registers a passkey.
+	* @param credentialId - The ID of the passkey credential to update. Is returned from createUserWithPasskey() and addPasskey().
 	* @param label - The new label for the passkey.
 	*/
 	async updatePasskeyLabel(authenticationToken, credentialId, label) {
