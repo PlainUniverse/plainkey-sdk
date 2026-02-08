@@ -1,0 +1,32 @@
+{
+  "name": "@plainkey/browser",
+  "version": "0.13.1",
+  "description": "PlainKey browser SDK for passkey registration, login and credential management",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown --clean --config tsdown.config.ts",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@plainkey/types": "0.14.0",
+    "@simplewebauthn/browser": "^13.2.0"
+  },
+  "devDependencies": {
+    "tsdown": "^0.15.5"
+  }
+}

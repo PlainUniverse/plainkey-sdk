@@ -1,0 +1,35 @@
+{
+  "name": "@plainkey/vue",
+  "version": "0.12.0",
+  "description": "PlainKey Vue SDK (composable)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
+  },
+  "peerDependencies": {
+    "vue": "^3.4.0"
+  },
+  "dependencies": {
+    "@plainkey/browser": "0.12.0",
+    "@plainkey/types": "0.12.0"
+  },
+  "scripts": {
+    "build": "tsdown --clean --config tsdown.config.ts",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "tsdown": "^0.15.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

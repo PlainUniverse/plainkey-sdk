@@ -1,0 +1,23 @@
+.DS_Store
+node_modules
+/dist
+
+.env
+.env.*
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?https://online2.superoffice.com/Cust25790/CS/scripts/customer.fcgi/getAttachment/1494823-9RxUElJkxA5ZgW1xLk4ukPC4dcIsqWY2SJdYqnqK2t4wiydJk409s5sLe3eamEEs-0/1758796297448.jpeg

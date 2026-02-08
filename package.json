@@ -1,0 +1,43 @@
+{
+  "private": true,
+  "name": "plainkey",
+  "version": "0.1.0",
+  "description": "Plainkey SDK for TypeScript, including frontend and backend",
+  "workspaces": [
+    "packages/types",
+    "packages/browser",
+    "packages/server",
+    "packages/vue"
+  ],
+  "scripts": {
+    "build:types": "npm run build -w @plainkey/types",
+    "build:browser": "npm run build -w @plainkey/browser",
+    "build:server": "npm run build -w @plainkey/server",
+    "build:vue": "npm run build -w @plainkey/vue",
+    "build": "npm run build:types && npm run build:browser && npm run build:vue && npm run build:server",
+    "test": "npm run test --workspaces",
+    "format": "prettier --write .",
+    "publish:types": "npm publish --access public -w @plainkey/types",
+    "publish:browser": "npm publish --access public -w @plainkey/browser",
+    "publish:vue": "npm publish --access public -w @plainkey/vue",
+    "publish:server": "npm publish --access public -w @plainkey/server",
+    "publish": "npm run publish:types && npm run publish:browser && npm run publish:vue && npm run publish:server"
+  },
+  "dependencies": {
+    "@eslint/css": "^0.11.1",
+    "@eslint/js": "^9.36.0",
+    "@eslint/json": "^0.13.2",
+    "@eslint/markdown": "^7.3.0",
+    "@types/node": "^24.5.2",
+    "eslint": "^9.36.0",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.44.1",
+    "vitest": "^3.2.4"
+  },
+  "devDependencies": {
+    "prettier": "3.6.2",
+    "tsdown": "^0.15.12",
+    "unplugin-vue": "^7.0.4",
+    "vue-tsc": "^3.0.10"
+  }
+}
