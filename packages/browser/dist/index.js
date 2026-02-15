@@ -77,7 +77,7 @@ var PlainKey = class {
 				data: {
 					userId: completeResponseData.userId,
 					authenticationToken: completeResponseData.authenticationToken,
-					credentialId: completeResponseData.credentialId
+					credential: completeResponseData.credential
 				}
 			};
 		} catch (error) {
@@ -129,7 +129,7 @@ var PlainKey = class {
 				success: completeResponseData.success,
 				data: {
 					authenticationToken: completeResponseData.authenticationToken,
-					credentialId: completeResponseData.credentialId
+					credential: completeResponseData.credential
 				}
 			};
 		} catch (error) {

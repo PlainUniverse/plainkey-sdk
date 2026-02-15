@@ -1,6 +1,6 @@
 {
   "name": "@plainkey/browser",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "description": "PlainKey browser SDK for passkey registration, login and credential management",
   "type": "module",
   "main": "./dist/index.js",
@@ -23,7 +23,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@plainkey/types": "0.16.0",
+    "@plainkey/types": "0.17.0",
     "@simplewebauthn/browser": "^13.2.0"
   },
   "devDependencies": {

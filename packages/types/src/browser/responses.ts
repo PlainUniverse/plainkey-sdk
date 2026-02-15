@@ -14,6 +14,14 @@ export type AuthenticationToken = {
   expiresAt: number
 }
 
+// Credential
+export type CredentialBasicInfo = {
+  id: string
+  label: string | null
+  authenticatorType: string | null
+  userId: string
+}
+
 // User Registration
 export type UserRegisterBeginResponse = {
   userId: string
@@ -24,7 +32,7 @@ export type UserRegisterCompleteResponse = {
   success: boolean
   userId: string
   authenticationToken: AuthenticationToken
-  credentialId: string
+  credential: CredentialBasicInfo
 }
 
 // Credential registration
@@ -35,7 +43,7 @@ export type UserCredentialBeginResponse = {
 export type UserCredentialCompleteResponse = {
   success: boolean
   authenticationToken: AuthenticationToken
-  credentialId: string
+  credential: CredentialBasicInfo
 }
 
 // Authentication

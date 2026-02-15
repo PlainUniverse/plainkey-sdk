@@ -1,6 +1,6 @@
 {
   "name": "@plainkey/vue",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "description": "PlainKey Vue SDK. Experimental!",
   "type": "module",
   "main": "./dist/index.js",
@@ -18,8 +18,8 @@
     "vue": "^3.4.0"
   },
   "dependencies": {
-    "@plainkey/browser": "0.16.0",
-    "@plainkey/types": "0.16.0"
+    "@plainkey/browser": "0.17.0",
+    "@plainkey/types": "0.17.0"
   },
   "scripts": {
     "build": "tsdown --clean --config tsdown.config.ts",

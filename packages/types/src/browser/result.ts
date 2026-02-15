@@ -1,6 +1,6 @@
 /** Types for the results of the various PlainKey() class methods. */
 
-import { AuthenticationToken } from "./responses"
+import { AuthenticationToken, CredentialBasicInfo } from "./responses"
 
 export interface AuthenticateResult {
   success: boolean
@@ -14,7 +14,7 @@ export interface CreateUserWithPasskeyResult {
   success: boolean
   data?: {
     userId: string
-    credentialId: string
+    credential: CredentialBasicInfo
     authenticationToken: AuthenticationToken
   }
   error?: { message: string }
@@ -23,7 +23,7 @@ export interface CreateUserWithPasskeyResult {
 export interface AddPasskeyResult {
   success: boolean
   data?: {
-    credentialId: string
+    credential: CredentialBasicInfo
     authenticationToken: AuthenticationToken
   }
   error?: { message: string }

@@ -125,7 +125,7 @@ export class PlainKey {
         data: {
           userId: completeResponseData.userId,
           authenticationToken: completeResponseData.authenticationToken,
-          credentialId: completeResponseData.credentialId
+          credential: completeResponseData.credential
         }
       }
     } catch (error) {
@@ -193,7 +193,7 @@ export class PlainKey {
         success: completeResponseData.success,
         data: {
           authenticationToken: completeResponseData.authenticationToken,
-          credentialId: completeResponseData.credentialId
+          credential: completeResponseData.credential
         }
       }
     } catch (error) {

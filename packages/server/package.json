@@ -1,6 +1,6 @@
 {
   "name": "@plainkey/server",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "description": "PlainKey TypeScript Server SDK",
   "type": "module",
   "main": "./dist/index.js",
@@ -23,7 +23,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@plainkey/types": "0.16.0",
+    "@plainkey/types": "0.17.0",
     "@simplewebauthn/server": "^13.2.1"
   },
   "devDependencies": {
