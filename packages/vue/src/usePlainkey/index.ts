@@ -46,9 +46,21 @@ export function usePlainKey(projectId: string, baseUrl?: string) {
     return plainKey.addPasskey(authenticationToken, userName)
   }
 
+  /**
+   * Updates a passkey label. Requires authentication shortly before this call. Any passkey registered to the user can be updated.
+   * @param authenticationToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
+   * Do NOT store it in local storage, database, etc. Always keep it in memory.
+   * @param credentialId - The ID of the passkey credential to update. Is returned from createUserWithPasskey() and addPasskey().
+   * @param label - The new label for the passkey.
+   */
+  function updatePasskeyLabel(authenticationToken: string, credentialId: string, label: string) {
+    return plainKey.updatePasskeyLabel(authenticationToken, credentialId, label)
+  }
+
   return {
     authenticate,
     createUserWithPasskey,
-    addPasskey
+    addPasskey,
+    updatePasskeyLabel
   }
 }

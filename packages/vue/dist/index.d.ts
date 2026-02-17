@@ -17,6 +17,7 @@ declare function usePlainKey(projectId: string, baseUrl?: string): {
   authenticate: (userIdentifier?: UserIdentifier) => Promise<_plainkey_types0.AuthenticateResult>;
   createUserWithPasskey: (userName?: string) => Promise<_plainkey_types0.CreateUserWithPasskeyResult>;
   addPasskey: (authenticationToken: string, userName?: string) => Promise<_plainkey_types0.AddPasskeyResult>;
+  updatePasskeyLabel: (authenticationToken: string, credentialId: string, label: string) => Promise<_plainkey_types0.UpdatePasskeyLabelResult>;
 };
 //#endregion
 export { usePlainKey };
