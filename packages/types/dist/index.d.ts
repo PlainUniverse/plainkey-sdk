@@ -139,11 +139,38 @@ type VerifyAuthenticationTokenResponse = {
   userId: string;
   payload: Record<string, unknown>;
 };
+type ServerCredential = {
+  id: string;
+  aaguid: string | null;
+  authenticatorType: string | null;
+  label: string | null;
+  webAuthnId: string | null;
+  userId: string;
+  counter: number | null;
+  transports: string[] | null;
+  credentialDeviceType: string | null;
+  credentialBackedUp: boolean | null;
+  createdAt: string;
+  updatedAt: string | null;
+  lastUsedAt: string | null;
+};
 //#endregion
 //#region src/server/result.d.ts
 type VerifyAuthenticationTokenResult = {
-  userId: string;
+  success: boolean;
+  data?: {
+    userId: string;
+  };
+  error?: {
+    message: string;
+  };
+};
+type BeginCredentialRegistrationResult = {
+  /** WebAuthn creation options — pass these to the browser to complete the passkey ceremony. */
+  options: PublicKeyCredentialCreationOptionsJSON$1;
+  /** Short-lived token — pass this to the browser alongside the options. */
+  authenticationToken: string;
 };
 //#endregion
-export { AccessTokenResponse, AddPasskeyResult, AuthenticateResult, AuthenticationBeginResponse, AuthenticationCompleteResponse, type AuthenticationResponseJSON, AuthenticationToken, CreateUserWithPasskeyResult, CredentialBasicInfo, CredentialLabelUpdateRequest, ErrorResponse, LoginBeginRequest, LoginCompleteRequest, type PublicKeyCredentialCreationOptionsJSON, type PublicKeyCredentialRequestOptionsJSON, type RegistrationResponseJSON, UpdatePasskeyLabelResult, UserCredentialBeginRequest, UserCredentialBeginResponse, UserCredentialCompleteRequest, UserCredentialCompleteResponse, UserIdentifier, UserInfo, UserRegisterBeginRequest, UserRegisterBeginResponse, UserRegisterCompleteRequest, UserRegisterCompleteResponse, VerifyAuthTokenRequest, VerifyAuthenticationTokenResponse, VerifyAuthenticationTokenResult };
+export { AccessTokenResponse, AddPasskeyResult, AuthenticateResult, AuthenticationBeginResponse, AuthenticationCompleteResponse, type AuthenticationResponseJSON, AuthenticationToken, BeginCredentialRegistrationResult, CreateUserWithPasskeyResult, CredentialBasicInfo, CredentialLabelUpdateRequest, ErrorResponse, LoginBeginRequest, LoginCompleteRequest, type PublicKeyCredentialCreationOptionsJSON, type PublicKeyCredentialRequestOptionsJSON, type RegistrationResponseJSON, ServerCredential, UpdatePasskeyLabelResult, UserCredentialBeginRequest, UserCredentialBeginResponse, UserCredentialCompleteRequest, UserCredentialCompleteResponse, UserIdentifier, UserInfo, UserRegisterBeginRequest, UserRegisterBeginResponse, UserRegisterCompleteRequest, UserRegisterCompleteResponse, VerifyAuthTokenRequest, VerifyAuthenticationTokenResponse, VerifyAuthenticationTokenResult };
 //# sourceMappingURL=index.d.ts.map

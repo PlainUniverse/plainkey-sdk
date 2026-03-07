@@ -1,5 +1,9 @@
 import {
   AccessTokenResponse,
+  BeginCredentialRegistrationResult,
+  ServerCredential,
+  UserIdentifier,
+  UserInfo,
   VerifyAuthenticationTokenResponse,
   VerifyAuthenticationTokenResult
 } from "@plainkey/types"
@@ -11,6 +15,15 @@ type AccessToken = {
   expires_at: Date
 }
 
+/**
+ * PlainKey server SDK. Used to verify authentication tokens and manage users and passkeys.
+ *
+ * Docs: https://plainkey.io/docs
+ *
+ * @param projectId - Your PlainKey project ID.
+ * @param projectSecret - Your PlainKey project secret.
+ * @param baseUrl - Set by default to https://api.plainkey.io/server. Change only for development purposes.
+ */
 export class PlainKeyServer {
   private readonly projectId: string
   private readonly projectSecret: string
@@ -126,39 +139,209 @@ export class PlainKeyServer {
     })
   }
 
+  // Authentication //
+
   /**
    * Verifies a user authentication token.
-   * If the token is valid, it returns the authenticated user's PlainKey User ID.
+   * Returns `{ success: true, data: { userId } }` on success, or `{ success: false, error: { message } }` on failure.
+   * An invalid or expired token is a normal expected outcome. Always check `result.success` before using `result.data`.
    *
-   * @param authenticationToken - The authentication token to verify.
-   * @returns On success, an object containing the authenticated user's PlainKey User ID.
-   * On failure, throws an error.
+   * @param authenticationToken - The authentication token to verify, received from the user's browser after a successful passkey authentication.
    */
   async verifyAuthenticationToken(
     authenticationToken: string
   ): Promise<VerifyAuthenticationTokenResult> {
-    // Verify the authentication token with the PlainKey Server API.
     const response = await fetch(`${this.baseUrl}/authentication-token/verify`, {
       method: "POST",
       headers: await this.defaultRequestHeaders(),
       body: JSON.stringify({ token: authenticationToken })
     })
 
-    // Parse the response data
-    const acceptedErrorCodes = [401]
-    const responseData = await this.parseResponse<VerifyAuthenticationTokenResponse>(
-      response,
-      acceptedErrorCodes
-    )
+    const responseData = await this.parseResponse<VerifyAuthenticationTokenResponse>(response, [
+      401
+    ])
 
-    // Throw error on invalid authentication token
     if (!responseData.valid) {
-      throw new Error(responseData.error ?? "Invalid authentication token.")
+      return {
+        success: false,
+        error: { message: responseData.error ?? "Invalid authentication token" }
+      }
     }
 
-    // Authentication token is valid
-    return { userId: responseData.userId }
+    return { success: true, data: { userId: responseData.userId } }
   }
 
-  // TODO: Begin passkey registration
+  // Users //
+
+  /**
+   * Get a user by their PlainKey user ID.
+   *
+   * @param userId - The PlainKey user ID.
+   */
+  async getUser(userId: string): Promise<UserInfo> {
+    const response = await fetch(`${this.baseUrl}/user/${userId}`, {
+      method: "GET",
+      headers: await this.defaultRequestHeaders()
+    })
+
+    return this.parseResponse<UserInfo>(response)
+  }
+
+  /**
+   * Find a user by their userName.
+   *
+   * @param userName - The user's userName.
+   */
+  async findUser(userName: string): Promise<UserInfo> {
+    const params = new URLSearchParams({ userName })
+    const response = await fetch(`${this.baseUrl}/user?${params}`, {
+      method: "GET",
+      headers: await this.defaultRequestHeaders()
+    })
+
+    return this.parseResponse<UserInfo>(response)
+  }
+
+  /**
+   * Create a new user.
+   *
+   * @param userName - A unique identifier for the user, like an email address or username. Optional.
+   */
+  async createUser(userName?: string): Promise<UserInfo> {
+    const response = await fetch(`${this.baseUrl}/user`, {
+      method: "POST",
+      headers: await this.defaultRequestHeaders(),
+      body: JSON.stringify({ userName })
+    })
+
+    return this.parseResponse<UserInfo>(response)
+  }
+
+  /**
+   * Update a user.
+   *
+   * @param userIdentifier - Identify the user by either their PlainKey user ID or userName.
+   * @param updates - Fields to update.
+   */
+  async updateUser(
+    userIdentifier: UserIdentifier,
+    updates: { userName?: string | null }
+  ): Promise<UserInfo> {
+    const response = await fetch(`${this.baseUrl}/user`, {
+      method: "PATCH",
+      headers: await this.defaultRequestHeaders(),
+      body: JSON.stringify({ userIdentifier, updates })
+    })
+
+    return this.parseResponse<UserInfo>(response)
+  }
+
+  /**
+   * Delete a user and all their passkeys.
+   *
+   * @param userIdentifier - Identify the user by either their PlainKey user ID or userName.
+   */
+  async deleteUser(userIdentifier: UserIdentifier): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/user`, {
+      method: "DELETE",
+      headers: await this.defaultRequestHeaders(),
+      body: JSON.stringify({ userIdentifier })
+    })
+
+    await this.parseResponse(response)
+  }
+
+  /**
+   * Bulk create users. Useful for importing existing users to PlainKey.
+   *
+   * @param userNames - Array of userNames to create.
+   */
+  async bulkCreateUsers(userNames: string[]): Promise<UserInfo[]> {
+    const response = await fetch(`${this.baseUrl}/user/bulk`, {
+      method: "POST",
+      headers: await this.defaultRequestHeaders(),
+      body: JSON.stringify({ users: userNames.map((userName) => ({ userName })) })
+    })
+
+    return this.parseResponse<UserInfo[]>(response)
+  }
+
+  // Credentials //
+
+  /**
+   * Get all passkeys for a user.
+   *
+   * @param userId - The PlainKey user ID.
+   */
+  async getUserCredentials(userId: string): Promise<ServerCredential[]> {
+    const response = await fetch(`${this.baseUrl}/user/${userId}/credentials`, {
+      method: "GET",
+      headers: await this.defaultRequestHeaders()
+    })
+
+    return this.parseResponse<ServerCredential[]>(response)
+  }
+
+  /**
+   * Get a specific passkey by ID.
+   *
+   * @param credentialId - The passkey ID.
+   */
+  async getCredential(credentialId: string): Promise<ServerCredential> {
+    const response = await fetch(`${this.baseUrl}/credential/${credentialId}`, {
+      method: "GET",
+      headers: await this.defaultRequestHeaders()
+    })
+
+    return this.parseResponse<ServerCredential>(response)
+  }
+
+  /**
+   * Delete a passkey.
+   *
+   * @param credentialId - The passkey ID.
+   */
+  async deleteCredential(credentialId: string): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/credential/${credentialId}`, {
+      method: "DELETE",
+      headers: await this.defaultRequestHeaders()
+    })
+
+    await this.parseResponse(response)
+  }
+
+  /**
+   * Update the label of a passkey. Pass null to clear the label.
+   *
+   * @param credentialId - The passkey ID.
+   * @param label - The new label, or null to clear it.
+   */
+  async updateCredentialLabel(credentialId: string, label: string | null): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/credential/${credentialId}/label`, {
+      method: "PATCH",
+      headers: await this.defaultRequestHeaders(),
+      body: JSON.stringify({ label })
+    })
+
+    await this.parseResponse(response)
+  }
+
+  /**
+   * Begin a passkey registration ceremony for an existing user, initiated from your backend.
+   * Returns WebAuthn options and a short-lived authenticationToken. Pass both to the browser.
+   * to complete the ceremony at /browser/user/credential/complete (or via the browser SDK's addPasskey()).
+   *
+   * @param userIdentifier - Identify the user by either their PlainKey user ID or userName.
+   */
+  async beginCredentialRegistration(
+    userIdentifier: UserIdentifier
+  ): Promise<BeginCredentialRegistrationResult> {
+    const response = await fetch(`${this.baseUrl}/user/credential/begin`, {
+      method: "POST",
+      headers: await this.defaultRequestHeaders(),
+      body: JSON.stringify({ userIdentifier })
+    })
+
+    return this.parseResponse<BeginCredentialRegistrationResult>(response)
+  }
 }
