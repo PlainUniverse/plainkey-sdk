@@ -6,7 +6,6 @@ Monorepo containing all PlainKey SDK packages. Public, customer-facing. DX is to
 ## Packages (`packages/`)
 - `@plainkey/browser` - Browser SDK for customer frontends
 - `@plainkey/server` - Server SDK for customer backends
-- `@plainkey/types` - Shared TypeScript types (used by both browser and server packages)
 - `@plainkey/vue` - Vue composables wrapping the browser SDK
 
 ## Tech Stack
@@ -20,14 +19,25 @@ Monorepo containing all PlainKey SDK packages. Public, customer-facing. DX is to
 ## Publishing
 - All packages have `"publishConfig": { "access": "public" }`
 - All packages are always published together at the same version, even if a package has no changes. Keeps things simple.
-- After finishing work on the SDK, always bump the version in all package.json files (browser, server, types, vue), then run `npm install` from the monorepo root (it's a workspace — this wires up inter-package dependencies), then `npm run build` to rebuild all in the correct order.
+- After finishing work on the SDK, always bump the version in all package.json files (browser, server, vue), then run `npm install` from the monorepo root (it's a workspace — this wires up inter-package dependencies), then `npm run build` to rebuild all in the correct order.
 
 ## Critical Rule
 Never write SDK methods, types, params, or result objects without first reading the corresponding endpoint in `plainkey-backend/src/routes/` and its associated request/response schemas in `plainkey-backend/src/schema/requests.ts` and `src/schema/responses.ts`. The SDK must exactly match what the backend expects and returns.
 
+## orval (Type Generation)
+Internal request/response types are auto-generated from the live OpenAPI specs using orval. Run `npm run generate` from the monorepo root whenever the backend API changes.
+
+- orval fetches directly from `https://api.plainkey.io/browser/openapi` and `https://api.plainkey.io/server/openapi` — no local spec files
+- Generated files live in `packages/browser/src/generated/api.ts` and `packages/server/src/generated/api.ts` — do NOT edit them manually, and do NOT re-export them from package indexes
+- All types and fetch functions are bundled into a single `api.ts` per package (no separate model/ directory)
+- Internal generated types must NOT leak into public API signatures
+- Public-facing types live in `packages/browser/src/types.ts` and `packages/server/src/types.ts`
+- `ServerCredential` is derived directly from the orval-generated `GetCredential200` type — stays in sync automatically
+- `@plainkey/browser` re-exports key `@simplewebauthn/browser` types: `RegistrationResponseJSON`, `AuthenticationResponseJSON`, `PublicKeyCredentialCreationOptionsJSON`, `PublicKeyCredentialRequestOptionsJSON`
+
 ## Code Style & DX Philosophy
 Always read existing code before modifying — follow established patterns closely.
-Types live in `@plainkey/types`, not in individual SDK packages.
+Public types live in each package's `src/types.ts`, not in a shared package.
 Keep public APIs minimal and intuitive. Less is more.
 
 ### Browser SDK (`@plainkey/browser`)
@@ -37,7 +47,7 @@ Keep public APIs minimal and intuitive. Less is more.
 
 ### Server SDK (`@plainkey/server`)
 - Methods **throw on error** — appropriate for server-side code where the caller controls error handling.
-- **Exception:** `verifyAuthenticationToken` returns `{ valid: boolean, userId?: string, error?: string }` instead of throwing on an invalid token, because an invalid/expired token is a normal expected outcome (user needs to re-authenticate), not an exceptional error.
+- **Exception:** `verifyAuthenticationToken` returns `{ success: boolean, data?: { userId }, error?: { message } }` instead of throwing on an invalid token, because an invalid/expired token is a normal expected outcome (user needs to re-authenticate), not an exceptional error.
 - Access token management is internal and automatic (`ensureAccessToken`). Customers never deal with tokens.
 - Clean, single-purpose async methods with descriptive names.
 

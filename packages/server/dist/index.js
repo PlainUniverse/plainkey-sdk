@@ -19,7 +19,7 @@ var PlainKeyServer = class {
 	}
 	/**
 	* Helper to parse response JSON.
-	* Throws error if status code is not 200 OK, if the response is not valid JSON.
+	* Throws on non-2xx responses unless the status code is in acceptedErrorCodes.
 	*/
 	async parseResponse(response, acceptedErrorCodes) {
 		let bodyText;
@@ -43,8 +43,8 @@ var PlainKeyServer = class {
 		return json;
 	}
 	/**
-	* Fetches a new access token from the server and sets it in the instance variable.
-	* @returns The access token object that was set in or retreived from the instance variable.
+	* Ensures a valid project access token exists, fetching a new one if needed.
+	* Access tokens expire after 60 minutes. A 10 minute grace period is applied.
 	*/
 	async ensureAccessToken() {
 		const gracePeriodDate = new Date(Date.now() + 600 * 1e3);
@@ -57,19 +57,15 @@ var PlainKeyServer = class {
 				client_secret: this.projectSecret
 			})
 		});
-		const responseData = await this.parseResponse(response);
-		const accessToken = {
-			access_token: responseData.access_token,
-			expires_at: new Date(Date.now() + responseData.expires_in * 1e3)
+		const data = await this.parseResponse(response);
+		this.accessToken = {
+			access_token: data.access_token,
+			expires_at: new Date(Date.now() + data.expires_in * 1e3)
 		};
-		this.accessToken = accessToken;
-		return accessToken;
+		return this.accessToken;
 	}
 	/**
-	* Returns the default headers to use for all server API requests using the access token.
-	* Includes the content type and the access token.
-	* It makes sure to fetch a new access token if one is not already set.
-	* @returns The default headers to use for all requests.
+	* Returns authenticated request headers. Automatically manages the project access token.
 	*/
 	async defaultRequestHeaders() {
 		const accessToken = await this.ensureAccessToken();
@@ -92,14 +88,14 @@ var PlainKeyServer = class {
 			headers: await this.defaultRequestHeaders(),
 			body: JSON.stringify({ token: authenticationToken })
 		});
-		const responseData = await this.parseResponse(response, [401]);
-		if (!responseData.valid) return {
+		const data = await this.parseResponse(response, [401]);
+		if (!data.valid) return {
 			success: false,
-			error: { message: responseData.error ?? "Invalid authentication token" }
+			error: { message: data.error ?? "Invalid authentication token" }
 		};
 		return {
 			success: true,
-			data: { userId: responseData.userId }
+			data: { userId: data.userId }
 		};
 	}
 	/**
@@ -144,7 +140,7 @@ var PlainKeyServer = class {
 	* Update a user.
 	*
 	* @param userIdentifier - Identify the user by either their PlainKey user ID or userName.
-	* @param updates - Fields to update.
+	* @param updates - Fields to update. Pass `userName: null` to clear it.
 	*/
 	async updateUser(userIdentifier, updates) {
 		const response = await fetch(`${this.baseUrl}/user`, {
@@ -235,8 +231,8 @@ var PlainKeyServer = class {
 	}
 	/**
 	* Begin a passkey registration ceremony for an existing user, initiated from your backend.
-	* Returns WebAuthn options and a short-lived authenticationToken. Pass both to the browser.
-	* to complete the ceremony at /browser/user/credential/complete (or via the browser SDK's addPasskey()).
+	* Returns WebAuthn options and a short-lived authenticationToken — pass both to the browser
+	* to complete the ceremony via the browser SDK's addPasskey().
 	*
 	* @param userIdentifier - Identify the user by either their PlainKey user ID or userName.
 	*/
@@ -246,7 +242,11 @@ var PlainKeyServer = class {
 			headers: await this.defaultRequestHeaders(),
 			body: JSON.stringify({ userIdentifier })
 		});
-		return this.parseResponse(response);
+		const data = await this.parseResponse(response);
+		return {
+			options: data.options,
+			authenticationToken: data.authenticationToken
+		};
 	}
 };
 

@@ -23,7 +23,6 @@
     "access": "public"
   },
   "dependencies": {
-    "@plainkey/types": "0.18.0",
     "@simplewebauthn/browser": "^13.2.0"
   },
   "devDependencies": {

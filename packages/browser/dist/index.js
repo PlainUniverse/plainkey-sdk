@@ -18,7 +18,7 @@ var PlainKey = class {
 	}
 	/**
 	* Helper to parse response JSON.
-	* Throws error if status code is not 200 OK, if the response is not valid JSON.
+	* Throws error if status code is not 200 OK or if the response is not valid JSON.
 	*/
 	async parseResponse(response) {
 		let bodyText;
@@ -48,36 +48,35 @@ var PlainKey = class {
 	*/
 	async createUserWithPasskey(userName) {
 		try {
-			const beginRequestBody = { userName };
 			const beginResponse = await fetch(`${this.baseUrl}/user/register/begin`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 					"x-project-id": this.projectId
 				},
-				body: JSON.stringify(beginRequestBody)
+				body: JSON.stringify({ userName })
 			});
 			const { userId, options } = await this.parseResponse(beginResponse);
-			const completeRequestBody = {
-				userId,
-				credential: await startRegistration({ optionsJSON: options })
-			};
+			const credential = await startRegistration({ optionsJSON: options });
 			const completeResponse = await fetch(`${this.baseUrl}/user/register/complete`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 					"x-project-id": this.projectId
 				},
-				body: JSON.stringify(completeRequestBody)
+				body: JSON.stringify({
+					userId,
+					credential
+				})
 			});
-			const completeResponseData = await this.parseResponse(completeResponse);
-			if (!completeResponseData.success) throw new Error("Server could not complete registration");
+			const completeData = await this.parseResponse(completeResponse);
+			if (!completeData.success) throw new Error("Server could not complete registration");
 			return {
-				success: completeResponseData.success,
+				success: true,
 				data: {
-					userId: completeResponseData.userId,
-					authenticationToken: completeResponseData.authenticationToken,
-					credential: completeResponseData.credential
+					userId: completeData.userId,
+					authenticationToken: completeData.authenticationToken,
+					credential: completeData.credential
 				}
 			};
 		} catch (error) {
@@ -90,46 +89,44 @@ var PlainKey = class {
 	/**
 	* Adds a passkey to an existing user. Will require user interaction to create a passkey.
 	*
-	* @param authenticationToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
+	* @param authenticationToken - The user authentication token, returned from .authenticate() or createUserWithPasskey().
 	* Do NOT store it in local storage, database, etc. Always keep it in memory.
-	* @param userName - A unique identifier for the user, like an email address or username.
-	* If not provided, the user's stored userName will be used.
+	* @param userName - A unique identifier for the user. If not provided, the user's stored userName will be used.
 	*/
 	async addPasskey(authenticationToken, userName) {
 		if (!authenticationToken) throw new Error("Authentication token is required");
 		try {
-			const beginParams = {
-				authenticationToken,
-				userName
-			};
 			const beginResponse = await fetch(`${this.baseUrl}/user/credential/begin`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 					"x-project-id": this.projectId
 				},
-				body: JSON.stringify(beginParams)
+				body: JSON.stringify({
+					authenticationToken,
+					userName
+				})
 			});
 			const { options } = await this.parseResponse(beginResponse);
-			const completeParams = {
-				authenticationToken,
-				credential: await startRegistration({ optionsJSON: options })
-			};
+			const credential = await startRegistration({ optionsJSON: options });
 			const completeResponse = await fetch(`${this.baseUrl}/user/credential/complete`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 					"x-project-id": this.projectId
 				},
-				body: JSON.stringify(completeParams)
+				body: JSON.stringify({
+					authenticationToken,
+					credential
+				})
 			});
-			const completeResponseData = await this.parseResponse(completeResponse);
-			if (!completeResponseData.success) throw new Error("Server could not complete passkey registration");
+			const completeData = await this.parseResponse(completeResponse);
+			if (!completeData.success) throw new Error("Server could not complete passkey registration");
 			return {
-				success: completeResponseData.success,
+				success: true,
 				data: {
-					authenticationToken: completeResponseData.authenticationToken,
-					credential: completeResponseData.credential
+					authenticationToken: completeData.authenticationToken,
+					credential: completeData.credential
 				}
 			};
 		} catch (error) {
@@ -140,17 +137,18 @@ var PlainKey = class {
 		}
 	}
 	/**
-	* Updates a passkey label. Requires authentication shortly before this call. Any passkey registered to the user can be updated.
-	* @param authenticationToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
+	* Updates a passkey label. Any passkey registered to the user can be updated.
+	*
+	* @param authenticationToken - The user authentication token, returned from .authenticate() or createUserWithPasskey().
 	* Do NOT store it in local storage, database, etc. Always keep it in memory.
-	* @param credentialId - The ID of the passkey credential to update. Is returned from createUserWithPasskey() and addPasskey().
+	* @param credentialId - The ID of the passkey to update, returned from createUserWithPasskey() or addPasskey().
 	* @param label - The new label for the passkey.
 	*/
 	async updatePasskeyLabel(authenticationToken, credentialId, label) {
 		if (!authenticationToken) throw new Error("Authentication token is required");
 		if (!credentialId) throw new Error("Credential ID is required");
 		try {
-			const updateLabelParams = {
+			const body = {
 				authenticationToken,
 				label
 			};
@@ -160,7 +158,7 @@ var PlainKey = class {
 					"Content-Type": "application/json",
 					"x-project-id": this.projectId
 				},
-				body: JSON.stringify(updateLabelParams)
+				body: JSON.stringify(body)
 			})).ok) throw new Error("Failed to update passkey label");
 			return { success: true };
 		} catch (error) {
@@ -174,39 +172,37 @@ var PlainKey = class {
 	* Authenticates a user. Can be used for login, verification, 2FA, etc.
 	* Will require user interaction to authenticate.
 	*
-	* @param userIdentifier - Optional object containing either the user's PlainKey User ID or their userName.
-	* Does not have to be provided for usernameless authentication.
+	* @param userIdentifier - Optional. Identify the user by their PlainKey user ID or userName.
+	* Not required for usernameless authentication.
 	*/
 	async authenticate(userIdentifier) {
 		try {
-			const beginParams = { userIdentifier };
 			const beginResponse = await fetch(`${this.baseUrl}/authenticate/begin`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 					"x-project-id": this.projectId
 				},
-				body: JSON.stringify(beginParams)
+				body: JSON.stringify({ userIdentifier })
 			});
-			const beginResponseData = await this.parseResponse(beginResponse);
-			if (!beginResponseData.options) throw new Error("Server returned no options in login begin response");
-			const authenticationResponse = await startAuthentication({ optionsJSON: beginResponseData.options });
+			const beginData = await this.parseResponse(beginResponse);
+			if (!beginData.options) throw new Error("Server returned no options in authentication begin response");
+			const authenticationResponse = await startAuthentication({ optionsJSON: beginData.options });
 			if (!authenticationResponse) throw new Error("No authentication response from browser");
-			const completeParams = {
-				loginSessionId: beginResponseData.loginSession.id,
-				authenticationResponse
-			};
-			const authenticateCompleteResponse = await fetch(`${this.baseUrl}/authenticate/complete`, {
+			const completeResponse = await fetch(`${this.baseUrl}/authenticate/complete`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 					"x-project-id": this.projectId
 				},
-				body: JSON.stringify(completeParams)
+				body: JSON.stringify({
+					loginSessionId: beginData.loginSession.id,
+					authenticationResponse
+				})
 			});
 			return {
 				success: true,
-				data: { authenticationToken: (await this.parseResponse(authenticateCompleteResponse)).authenticationToken }
+				data: { authenticationToken: (await this.parseResponse(completeResponse)).authenticationToken }
 			};
 		} catch (error) {
 			return {

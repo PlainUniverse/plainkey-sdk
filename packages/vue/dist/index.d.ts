@@ -1,5 +1,5 @@
+import { UserIdentifier } from "@plainkey/browser";
 import * as _plainkey_types0 from "@plainkey/types";
-import { UserIdentifier } from "@plainkey/types";
 
 //#region src/usePlainkey/index.d.ts
 
