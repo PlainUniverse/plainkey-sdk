@@ -1,5 +1,5 @@
 import { PlainKey } from "@plainkey/browser"
-import type { UserIdentifier } from "@plainkey/types"
+import type { UserIdentifier } from "@plainkey/browser"
 
 /**
  *

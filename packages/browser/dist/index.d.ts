@@ -1,7 +1,58 @@
-import { AddPasskeyResult, AuthenticateResult, CreateUserWithPasskeyResult, UpdatePasskeyLabelResult, UserIdentifier } from "@plainkey/types";
+import { AuthenticationResponseJSON, PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON, RegistrationResponseJSON } from "@simplewebauthn/browser";
 
+//#region src/types.d.ts
+type UserIdentifier = {
+  userId?: string;
+  userName?: string;
+};
+type AuthenticationToken = {
+  token: string;
+  expiresAt: number;
+};
+type CredentialBasicInfo = {
+  id: string;
+  label: string | null;
+  authenticatorType: string | null;
+  userId: string;
+};
+interface AuthenticateResult {
+  success: boolean;
+  data?: {
+    authenticationToken: AuthenticationToken;
+  };
+  error?: {
+    message: string;
+  };
+}
+interface CreateUserWithPasskeyResult {
+  success: boolean;
+  data?: {
+    userId: string;
+    credential: CredentialBasicInfo;
+    authenticationToken: AuthenticationToken;
+  };
+  error?: {
+    message: string;
+  };
+}
+interface AddPasskeyResult {
+  success: boolean;
+  data?: {
+    credential: CredentialBasicInfo;
+    authenticationToken: AuthenticationToken;
+  };
+  error?: {
+    message: string;
+  };
+}
+interface UpdatePasskeyLabelResult {
+  success: boolean;
+  error?: {
+    message: string;
+  };
+}
+//#endregion
 //#region src/plainKey.d.ts
-
 /**
  * PlainKey client for the browser. Used to register new users, add passkeys to existing users, and log users in.
  *
@@ -16,7 +67,7 @@ declare class PlainKey {
   constructor(projectId: string, baseUrl?: string);
   /**
    * Helper to parse response JSON.
-   * Throws error if status code is not 200 OK, if the response is not valid JSON.
+   * Throws error if status code is not 200 OK or if the response is not valid JSON.
    */
   private parseResponse;
   /**
@@ -29,17 +80,17 @@ declare class PlainKey {
   /**
    * Adds a passkey to an existing user. Will require user interaction to create a passkey.
    *
-   * @param authenticationToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
+   * @param authenticationToken - The user authentication token, returned from .authenticate() or createUserWithPasskey().
    * Do NOT store it in local storage, database, etc. Always keep it in memory.
-   * @param userName - A unique identifier for the user, like an email address or username.
-   * If not provided, the user's stored userName will be used.
+   * @param userName - A unique identifier for the user. If not provided, the user's stored userName will be used.
    */
   addPasskey(authenticationToken: string, userName?: string): Promise<AddPasskeyResult>;
   /**
-   * Updates a passkey label. Requires authentication shortly before this call. Any passkey registered to the user can be updated.
-   * @param authenticationToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
+   * Updates a passkey label. Any passkey registered to the user can be updated.
+   *
+   * @param authenticationToken - The user authentication token, returned from .authenticate() or createUserWithPasskey().
    * Do NOT store it in local storage, database, etc. Always keep it in memory.
-   * @param credentialId - The ID of the passkey credential to update. Is returned from createUserWithPasskey() and addPasskey().
+   * @param credentialId - The ID of the passkey to update, returned from createUserWithPasskey() or addPasskey().
    * @param label - The new label for the passkey.
    */
   updatePasskeyLabel(authenticationToken: string, credentialId: string, label: string): Promise<UpdatePasskeyLabelResult>;
@@ -47,11 +98,11 @@ declare class PlainKey {
    * Authenticates a user. Can be used for login, verification, 2FA, etc.
    * Will require user interaction to authenticate.
    *
-   * @param userIdentifier - Optional object containing either the user's PlainKey User ID or their userName.
-   * Does not have to be provided for usernameless authentication.
+   * @param userIdentifier - Optional. Identify the user by their PlainKey user ID or userName.
+   * Not required for usernameless authentication.
    */
   authenticate(userIdentifier?: UserIdentifier): Promise<AuthenticateResult>;
 }
 //#endregion
-export { PlainKey };
+export { AddPasskeyResult, AuthenticateResult, type AuthenticationResponseJSON, AuthenticationToken, CreateUserWithPasskeyResult, CredentialBasicInfo, PlainKey, type PublicKeyCredentialCreationOptionsJSON, type PublicKeyCredentialRequestOptionsJSON, type RegistrationResponseJSON, UpdatePasskeyLabelResult, UserIdentifier };
 //# sourceMappingURL=index.d.ts.map

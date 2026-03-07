@@ -1,16 +1,40 @@
-import {
-  AccessTokenResponse,
-  VerifyAuthenticationTokenResponse,
+import type {
+  BeginCredentialRegistrationResult,
+  PublicKeyCredentialCreationOptionsJSON,
+  ServerCredential,
+  UserIdentifier,
+  UserInfo,
+  UserUpdates,
   VerifyAuthenticationTokenResult
-} from "@plainkey/types"
+} from "./types"
+
+import type {
+  GetProjectAccessToken200,
+  VerifyAuthenticationToken200,
+  GetUser200,
+  CreateUser200,
+  UpdateUser200,
+  BulkCreateUsers200Item,
+  GetUserCredentials200Item,
+  GetCredential200,
+  BeginCredentialRegistration200
+} from "./generated/api"
 
 type AccessToken = {
   access_token: string
-
   // Calculated from expires_in. Will not be exact due to request time.
   expires_at: Date
 }
 
+/**
+ * PlainKey server SDK. Used to verify authentication tokens and manage users and passkeys.
+ *
+ * Docs: https://plainkey.io/docs
+ *
+ * @param projectId - Your PlainKey project ID.
+ * @param projectSecret - Your PlainKey project secret.
+ * @param baseUrl - Set by default to https://api.plainkey.io/server. Change only for development purposes.
+ */
 export class PlainKeyServer {
   private readonly projectId: string
   private readonly projectSecret: string
@@ -33,7 +57,7 @@ export class PlainKeyServer {
 
   /**
    * Helper to parse response JSON.
-   * Throws error if status code is not 200 OK, if the response is not valid JSON.
+   * Throws on non-2xx responses unless the status code is in acceptedErrorCodes.
    */
   private async parseResponse<T = any>(
     response: Response,
@@ -48,7 +72,6 @@ export class PlainKeyServer {
       throw new Error("Network error while reading server response")
     }
 
-    // Parse the response text as JSON.
     let json: any
 
     try {
@@ -59,12 +82,9 @@ export class PlainKeyServer {
     }
 
     if (!response.ok) {
-      // If status code is a acceped error code we parse return the parsed JSON instead of the error.
       if (acceptedErrorCodes && acceptedErrorCodes.includes(response.status)) {
         return json as T
       }
-
-      // Server should return { error: string }
       const message = json && typeof json.error === "string" ? json.error : "Unknown server error"
       throw new Error(message)
     }
@@ -73,19 +93,16 @@ export class PlainKeyServer {
   }
 
   /**
-   * Fetches a new access token from the server and sets it in the instance variable.
-   * @returns The access token object that was set in or retreived from the instance variable.
+   * Ensures a valid project access token exists, fetching a new one if needed.
+   * Access tokens expire after 60 minutes. A 10 minute grace period is applied.
    */
   private async ensureAccessToken(): Promise<AccessToken> {
-    // We only fetch a new access token if none is set or it is close to expiration/have been expired.
-    // Expiration should be 60 minutes. Grace period: 10 minutes.
     const gracePeriodDate = new Date(Date.now() + 10 * 60 * 1000)
 
     if (this.accessToken && this.accessToken.expires_at > gracePeriodDate) {
       return this.accessToken
     }
 
-    // Fetch the access token from the PlainKey Server API.
     const response = await fetch(`${this.baseUrl}/access-token`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -95,29 +112,21 @@ export class PlainKeyServer {
       })
     })
 
-    // Parse the response data
-    const responseData: AccessTokenResponse =
-      await this.parseResponse<AccessTokenResponse>(response)
+    const data = await this.parseResponse<GetProjectAccessToken200>(response)
 
-    // Make into the internal access token object.
-    const accessToken: AccessToken = {
-      access_token: responseData.access_token,
-      expires_at: new Date(Date.now() + responseData.expires_in * 1000)
+    this.accessToken = {
+      access_token: data.access_token,
+      expires_at: new Date(Date.now() + data.expires_in * 1000)
     }
 
-    // Set the access token in the instance variable
-    this.accessToken = accessToken
-    return accessToken
+    return this.accessToken
   }
 
   /**
-   * Returns the default headers to use for all server API requests using the access token.
-   * Includes the content type and the access token.
-   * It makes sure to fetch a new access token if one is not already set.
-   * @returns The default headers to use for all requests.
+   * Returns authenticated request headers. Automatically manages the project access token.
    */
   private async defaultRequestHeaders(): Promise<Headers> {
-    const accessToken: AccessToken = await this.ensureAccessToken()
+    const accessToken = await this.ensureAccessToken()
 
     return new Headers({
       "Content-Type": "application/json",
@@ -126,39 +135,206 @@ export class PlainKeyServer {
     })
   }
 
+  // Authentication //
+
   /**
    * Verifies a user authentication token.
-   * If the token is valid, it returns the authenticated user's PlainKey User ID.
+   * Returns `{ success: true, data: { userId } }` on success, or `{ success: false, error: { message } }` on failure.
+   * An invalid or expired token is a normal expected outcome. Always check `result.success` before using `result.data`.
    *
-   * @param authenticationToken - The authentication token to verify.
-   * @returns On success, an object containing the authenticated user's PlainKey User ID.
-   * On failure, throws an error.
+   * @param authenticationToken - The authentication token to verify, received from the user's browser after a successful passkey authentication.
    */
   async verifyAuthenticationToken(
     authenticationToken: string
   ): Promise<VerifyAuthenticationTokenResult> {
-    // Verify the authentication token with the PlainKey Server API.
     const response = await fetch(`${this.baseUrl}/authentication-token/verify`, {
       method: "POST",
       headers: await this.defaultRequestHeaders(),
       body: JSON.stringify({ token: authenticationToken })
     })
 
-    // Parse the response data
-    const acceptedErrorCodes = [401]
-    const responseData = await this.parseResponse<VerifyAuthenticationTokenResponse>(
-      response,
-      acceptedErrorCodes
-    )
+    const data = await this.parseResponse<VerifyAuthenticationToken200>(response, [401])
 
-    // Throw error on invalid authentication token
-    if (!responseData.valid) {
-      throw new Error(responseData.error ?? "Invalid authentication token.")
+    if (!data.valid) {
+      return { success: false, error: { message: data.error ?? "Invalid authentication token" } }
     }
 
-    // Authentication token is valid
-    return { userId: responseData.userId }
+    return { success: true, data: { userId: data.userId } }
   }
 
-  // TODO: Begin passkey registration
+  // Users //
+
+  /**
+   * Get a user by their PlainKey user ID.
+   *
+   * @param userId - The PlainKey user ID.
+   */
+  async getUser(userId: string): Promise<UserInfo> {
+    const response = await fetch(`${this.baseUrl}/user/${userId}`, {
+      method: "GET",
+      headers: await this.defaultRequestHeaders()
+    })
+
+    return this.parseResponse<GetUser200>(response)
+  }
+
+  /**
+   * Find a user by their userName.
+   *
+   * @param userName - The user's userName.
+   */
+  async findUser(userName: string): Promise<UserInfo> {
+    const params = new URLSearchParams({ userName })
+    const response = await fetch(`${this.baseUrl}/user?${params}`, {
+      method: "GET",
+      headers: await this.defaultRequestHeaders()
+    })
+
+    return this.parseResponse<GetUser200>(response)
+  }
+
+  /**
+   * Create a new user.
+   *
+   * @param userName - A unique identifier for the user, like an email address or username. Optional for usernameless flows.
+   */
+  async createUser(userName?: string): Promise<UserInfo> {
+    const response = await fetch(`${this.baseUrl}/user`, {
+      method: "POST",
+      headers: await this.defaultRequestHeaders(),
+      body: JSON.stringify({ userName })
+    })
+
+    return this.parseResponse<CreateUser200>(response)
+  }
+
+  /**
+   * Update a user.
+   *
+   * @param userIdentifier - Identify the user by either their PlainKey user ID or userName.
+   * @param updates - Fields to update. Pass `userName: null` to clear it.
+   */
+  async updateUser(userIdentifier: UserIdentifier, updates: UserUpdates): Promise<UserInfo> {
+    const response = await fetch(`${this.baseUrl}/user`, {
+      method: "PATCH",
+      headers: await this.defaultRequestHeaders(),
+      body: JSON.stringify({ userIdentifier, updates })
+    })
+
+    return this.parseResponse<UpdateUser200>(response)
+  }
+
+  /**
+   * Delete a user and all their passkeys.
+   *
+   * @param userIdentifier - Identify the user by either their PlainKey user ID or userName.
+   */
+  async deleteUser(userIdentifier: UserIdentifier): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/user`, {
+      method: "DELETE",
+      headers: await this.defaultRequestHeaders(),
+      body: JSON.stringify({ userIdentifier })
+    })
+
+    await this.parseResponse(response)
+  }
+
+  /**
+   * Bulk create users. Useful for migrating existing users to PlainKey.
+   *
+   * @param userNames - Array of userNames to create.
+   */
+  async bulkCreateUsers(userNames: string[]): Promise<UserInfo[]> {
+    const response = await fetch(`${this.baseUrl}/user/bulk`, {
+      method: "POST",
+      headers: await this.defaultRequestHeaders(),
+      body: JSON.stringify({ users: userNames.map((userName) => ({ userName })) })
+    })
+
+    return this.parseResponse<BulkCreateUsers200Item[]>(response)
+  }
+
+  // Credentials //
+
+  /**
+   * Get all passkeys for a user.
+   *
+   * @param userId - The PlainKey user ID.
+   */
+  async getUserCredentials(userId: string): Promise<ServerCredential[]> {
+    const response = await fetch(`${this.baseUrl}/user/${userId}/credentials`, {
+      method: "GET",
+      headers: await this.defaultRequestHeaders()
+    })
+
+    return this.parseResponse<GetUserCredentials200Item[]>(response)
+  }
+
+  /**
+   * Get a specific passkey by ID.
+   *
+   * @param credentialId - The passkey ID.
+   */
+  async getCredential(credentialId: string): Promise<ServerCredential> {
+    const response = await fetch(`${this.baseUrl}/credential/${credentialId}`, {
+      method: "GET",
+      headers: await this.defaultRequestHeaders()
+    })
+
+    return this.parseResponse<GetCredential200>(response)
+  }
+
+  /**
+   * Delete a passkey.
+   *
+   * @param credentialId - The passkey ID.
+   */
+  async deleteCredential(credentialId: string): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/credential/${credentialId}`, {
+      method: "DELETE",
+      headers: await this.defaultRequestHeaders()
+    })
+
+    await this.parseResponse(response)
+  }
+
+  /**
+   * Update the label of a passkey. Pass null to clear the label.
+   *
+   * @param credentialId - The passkey ID.
+   * @param label - The new label, or null to clear it.
+   */
+  async updateCredentialLabel(credentialId: string, label: string | null): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/credential/${credentialId}/label`, {
+      method: "PATCH",
+      headers: await this.defaultRequestHeaders(),
+      body: JSON.stringify({ label })
+    })
+
+    await this.parseResponse(response)
+  }
+
+  /**
+   * Begin a passkey registration ceremony for an existing user, initiated from your backend.
+   * Returns WebAuthn options and a short-lived authenticationToken — pass both to the browser
+   * to complete the ceremony via the browser SDK's addPasskey().
+   *
+   * @param userIdentifier - Identify the user by either their PlainKey user ID or userName.
+   */
+  async beginCredentialRegistration(
+    userIdentifier: UserIdentifier
+  ): Promise<BeginCredentialRegistrationResult> {
+    const response = await fetch(`${this.baseUrl}/user/credential/begin`, {
+      method: "POST",
+      headers: await this.defaultRequestHeaders(),
+      body: JSON.stringify({ userIdentifier })
+    })
+
+    const data = await this.parseResponse<BeginCredentialRegistration200>(response)
+
+    return {
+      options: data.options as unknown as PublicKeyCredentialCreationOptionsJSON,
+      authenticationToken: data.authenticationToken
+    }
+  }
 }

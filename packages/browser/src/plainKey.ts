@@ -1,26 +1,27 @@
-import { startAuthentication, startRegistration } from "@simplewebauthn/browser"
-import { RegistrationResponseJSON, AuthenticationResponseJSON } from "@simplewebauthn/browser"
+import {
+  startAuthentication,
+  startRegistration,
+  type PublicKeyCredentialCreationOptionsJSON,
+  type PublicKeyCredentialRequestOptionsJSON
+} from "@simplewebauthn/browser"
 
 import type {
-  UserCredentialBeginRequest,
-  UserCredentialCompleteRequest,
-  LoginBeginRequest,
-  LoginCompleteRequest,
-  UserIdentifier,
-  CreateUserWithPasskeyResult,
-  AddPasskeyResult,
   AuthenticateResult,
-  UserRegisterBeginRequest,
-  UserRegisterBeginResponse,
-  UserRegisterCompleteRequest,
-  UserRegisterCompleteResponse,
-  AuthenticationCompleteResponse,
-  AuthenticationBeginResponse,
-  CredentialLabelUpdateRequest,
-  UpdatePasskeyLabelResult
-} from "@plainkey/types"
+  AddPasskeyResult,
+  CreateUserWithPasskeyResult,
+  UpdatePasskeyLabelResult,
+  UserIdentifier
+} from "./types"
 
-import type { UserCredentialBeginResponse, UserCredentialCompleteResponse } from "@plainkey/types"
+import type {
+  BeginUserRegistration200,
+  CompleteUserRegistration200,
+  BeginCredentialRegistration200,
+  CompleteCredentialRegistration200,
+  BeginAuthentication200,
+  CompleteAuthentication200,
+  UpdateCredentialLabelBody
+} from "./generated/api"
 
 /**
  * PlainKey client for the browser. Used to register new users, add passkeys to existing users, and log users in.
@@ -44,7 +45,7 @@ export class PlainKey {
 
   /**
    * Helper to parse response JSON.
-   * Throws error if status code is not 200 OK, if the response is not valid JSON.
+   * Throws error if status code is not 200 OK or if the response is not valid JSON.
    */
   private async parseResponse<T = any>(response: Response): Promise<T> {
     let bodyText: string
@@ -56,7 +57,6 @@ export class PlainKey {
       throw new Error("Network error while reading server response")
     }
 
-    // Parse the response text as JSON.
     let json: any
 
     try {
@@ -67,7 +67,6 @@ export class PlainKey {
     }
 
     if (!response.ok) {
-      // Server should return { error: string }
       const message = json && typeof json.error === "string" ? json.error : "Unknown server error"
       throw new Error(message)
     }
@@ -84,57 +83,49 @@ export class PlainKey {
   async createUserWithPasskey(userName?: string): Promise<CreateUserWithPasskeyResult> {
     try {
       // Step 1: Get registration options from server
-      const beginRequestBody: UserRegisterBeginRequest = { userName }
       const beginResponse = await fetch(`${this.baseUrl}/user/register/begin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "x-project-id": this.projectId
         },
-        body: JSON.stringify(beginRequestBody)
+        body: JSON.stringify({ userName })
       })
 
-      // Parse response JSON
-      const { userId, options } = await this.parseResponse<UserRegisterBeginResponse>(beginResponse)
+      const { userId, options } =
+        await this.parseResponse<BeginUserRegistration200>(beginResponse)
 
       // Step 2: Create credential using browser's WebAuthn API
-      const credential: RegistrationResponseJSON = await startRegistration({
-        optionsJSON: options
+      const credential = await startRegistration({
+        optionsJSON: options as unknown as PublicKeyCredentialCreationOptionsJSON
       })
 
       // Step 3: Send credential to server for verification
-      const completeRequestBody: UserRegisterCompleteRequest = { userId, credential }
       const completeResponse = await fetch(`${this.baseUrl}/user/register/complete`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "x-project-id": this.projectId
         },
-        body: JSON.stringify(completeRequestBody)
+        body: JSON.stringify({ userId, credential })
       })
 
-      // Parse response JSON
-      const completeResponseData: UserRegisterCompleteResponse =
-        await this.parseResponse<UserRegisterCompleteResponse>(completeResponse)
+      const completeData = await this.parseResponse<CompleteUserRegistration200>(completeResponse)
 
-      if (!completeResponseData.success) throw new Error("Server could not complete registration")
+      if (!completeData.success) throw new Error("Server could not complete registration")
 
-      // Return success
       return {
-        success: completeResponseData.success,
+        success: true,
         data: {
-          userId: completeResponseData.userId,
-          authenticationToken: completeResponseData.authenticationToken,
-          credential: completeResponseData.credential
+          userId: completeData.userId,
+          authenticationToken: completeData.authenticationToken,
+          credential: completeData.credential
         }
       }
     } catch (error) {
-      // Return error
       return {
         success: false,
-        error: {
-          message: error instanceof Error ? error.message : "Unknown error"
-        }
+        error: { message: error instanceof Error ? error.message : "Unknown error" }
       }
     }
   }
@@ -142,76 +133,67 @@ export class PlainKey {
   /**
    * Adds a passkey to an existing user. Will require user interaction to create a passkey.
    *
-   * @param authenticationToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
+   * @param authenticationToken - The user authentication token, returned from .authenticate() or createUserWithPasskey().
    * Do NOT store it in local storage, database, etc. Always keep it in memory.
-   * @param userName - A unique identifier for the user, like an email address or username.
-   * If not provided, the user's stored userName will be used.
+   * @param userName - A unique identifier for the user. If not provided, the user's stored userName will be used.
    */
   async addPasskey(authenticationToken: string, userName?: string): Promise<AddPasskeyResult> {
     if (!authenticationToken) throw new Error("Authentication token is required")
 
     try {
       // Step 1: Get credential registration options from server
-      const beginParams: UserCredentialBeginRequest = { authenticationToken, userName }
       const beginResponse = await fetch(`${this.baseUrl}/user/credential/begin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "x-project-id": this.projectId
         },
-        body: JSON.stringify(beginParams)
+        body: JSON.stringify({ authenticationToken, userName })
       })
 
-      // Parse response JSON
-      const { options }: UserCredentialBeginResponse =
-        await this.parseResponse<UserCredentialBeginResponse>(beginResponse)
+      const { options } = await this.parseResponse<BeginCredentialRegistration200>(beginResponse)
 
       // Step 2: Create credential using browser's WebAuthn API
-      const credential: RegistrationResponseJSON = await startRegistration({ optionsJSON: options })
+      const credential = await startRegistration({
+        optionsJSON: options as unknown as PublicKeyCredentialCreationOptionsJSON
+      })
 
       // Step 3: Send credential to server for verification
-      const completeParams: UserCredentialCompleteRequest = { authenticationToken, credential }
-
       const completeResponse = await fetch(`${this.baseUrl}/user/credential/complete`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "x-project-id": this.projectId
         },
-        body: JSON.stringify(completeParams)
+        body: JSON.stringify({ authenticationToken, credential })
       })
 
-      // Parse response JSON
-      const completeResponseData: UserCredentialCompleteResponse =
-        await this.parseResponse<UserCredentialCompleteResponse>(completeResponse)
+      const completeData =
+        await this.parseResponse<CompleteCredentialRegistration200>(completeResponse)
 
-      if (!completeResponseData.success)
-        throw new Error("Server could not complete passkey registration")
+      if (!completeData.success) throw new Error("Server could not complete passkey registration")
 
-      // Return success
       return {
-        success: completeResponseData.success,
+        success: true,
         data: {
-          authenticationToken: completeResponseData.authenticationToken,
-          credential: completeResponseData.credential
+          authenticationToken: completeData.authenticationToken,
+          credential: completeData.credential
         }
       }
     } catch (error) {
-      // Return error
       return {
         success: false,
-        error: {
-          message: error instanceof Error ? error.message : "Unknown error"
-        }
+        error: { message: error instanceof Error ? error.message : "Unknown error" }
       }
     }
   }
 
   /**
-   * Updates a passkey label. Requires authentication shortly before this call. Any passkey registered to the user can be updated.
-   * @param authenticationToken - The user authentication token, is returned from .authenticate() and createUserWithPasskey().
+   * Updates a passkey label. Any passkey registered to the user can be updated.
+   *
+   * @param authenticationToken - The user authentication token, returned from .authenticate() or createUserWithPasskey().
    * Do NOT store it in local storage, database, etc. Always keep it in memory.
-   * @param credentialId - The ID of the passkey credential to update. Is returned from createUserWithPasskey() and addPasskey().
+   * @param credentialId - The ID of the passkey to update, returned from createUserWithPasskey() or addPasskey().
    * @param label - The new label for the passkey.
    */
   async updatePasskeyLabel(
@@ -221,25 +203,22 @@ export class PlainKey {
   ): Promise<UpdatePasskeyLabelResult> {
     if (!authenticationToken) throw new Error("Authentication token is required")
     if (!credentialId) throw new Error("Credential ID is required")
-    // Empty label is allowed
 
     try {
-      const updateLabelParams: CredentialLabelUpdateRequest = { authenticationToken, label }
-      const updateLabelResponse = await fetch(`${this.baseUrl}/credential/${credentialId}/label`, {
+      const body: UpdateCredentialLabelBody = { authenticationToken, label }
+      const response = await fetch(`${this.baseUrl}/credential/${credentialId}/label`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           "x-project-id": this.projectId
         },
-        body: JSON.stringify(updateLabelParams)
+        body: JSON.stringify(body)
       })
 
-      if (!updateLabelResponse.ok) throw new Error("Failed to update passkey label")
+      if (!response.ok) throw new Error("Failed to update passkey label")
 
-      // Return success
       return { success: true }
     } catch (error) {
-      // Return error
       return {
         success: false,
         error: { message: error instanceof Error ? error.message : "Unknown error" }
@@ -251,70 +230,55 @@ export class PlainKey {
    * Authenticates a user. Can be used for login, verification, 2FA, etc.
    * Will require user interaction to authenticate.
    *
-   * @param userIdentifier - Optional object containing either the user's PlainKey User ID or their userName.
-   * Does not have to be provided for usernameless authentication.
+   * @param userIdentifier - Optional. Identify the user by their PlainKey user ID or userName.
+   * Not required for usernameless authentication.
    */
   async authenticate(userIdentifier?: UserIdentifier): Promise<AuthenticateResult> {
     try {
       // Step 1: Get authentication options from server
-      const beginParams: LoginBeginRequest = { userIdentifier }
       const beginResponse = await fetch(`${this.baseUrl}/authenticate/begin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "x-project-id": this.projectId
         },
-        body: JSON.stringify(beginParams)
+        body: JSON.stringify({ userIdentifier })
       })
 
-      // Parse response JSON
-      const beginResponseData: AuthenticationBeginResponse =
-        await this.parseResponse<AuthenticationBeginResponse>(beginResponse)
+      const beginData = await this.parseResponse<BeginAuthentication200>(beginResponse)
 
-      if (!beginResponseData.options)
-        throw new Error("Server returned no options in login begin response")
+      if (!beginData.options) throw new Error("Server returned no options in authentication begin response")
 
       // Step 2: Pass options to the authenticator and wait for response
-      const authenticationResponse: AuthenticationResponseJSON = await startAuthentication({
-        optionsJSON: beginResponseData.options
+      const authenticationResponse = await startAuthentication({
+        optionsJSON: beginData.options as unknown as PublicKeyCredentialRequestOptionsJSON
       })
 
       if (!authenticationResponse) throw new Error("No authentication response from browser")
 
       // Step 3: POST the response to the server
-      // This uses the authentication session ID from the begin response - always in JS memory.
-      // Do not store it in local storage, database, etc.
-      const completeParams: LoginCompleteRequest = {
-        loginSessionId: beginResponseData.loginSession.id,
-        authenticationResponse
-      }
-
-      const authenticateCompleteResponse = await fetch(`${this.baseUrl}/authenticate/complete`, {
+      const completeResponse = await fetch(`${this.baseUrl}/authenticate/complete`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "x-project-id": this.projectId
         },
-        body: JSON.stringify(completeParams)
+        body: JSON.stringify({
+          loginSessionId: beginData.loginSession.id,
+          authenticationResponse
+        })
       })
 
-      const authCompleteResponseData: AuthenticationCompleteResponse =
-        await this.parseResponse<AuthenticationCompleteResponse>(authenticateCompleteResponse)
+      const completeData = await this.parseResponse<CompleteAuthentication200>(completeResponse)
 
-      // Return success
       return {
         success: true,
-        data: {
-          authenticationToken: authCompleteResponseData.authenticationToken
-        }
+        data: { authenticationToken: completeData.authenticationToken }
       }
     } catch (error) {
-      // Return error
       return {
         success: false,
-        error: {
-          message: error instanceof Error ? error.message : "Unknown error"
-        }
+        error: { message: error instanceof Error ? error.message : "Unknown error" }
       }
     }
   }

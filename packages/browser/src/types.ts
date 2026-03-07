@@ -1,6 +1,19 @@
-/** Types for the results of the various PlainKey() class methods. */
+export type UserIdentifier = {
+  userId?: string
+  userName?: string
+}
 
-import { AuthenticationToken, CredentialBasicInfo } from "./responses"
+export type AuthenticationToken = {
+  token: string
+  expiresAt: number
+}
+
+export type CredentialBasicInfo = {
+  id: string
+  label: string | null
+  authenticatorType: string | null
+  userId: string
+}
 
 export interface AuthenticateResult {
   success: boolean
@@ -33,3 +46,10 @@ export interface UpdatePasskeyLabelResult {
   success: boolean
   error?: { message: string }
 }
+
+export type {
+  RegistrationResponseJSON,
+  AuthenticationResponseJSON,
+  PublicKeyCredentialCreationOptionsJSON,
+  PublicKeyCredentialRequestOptionsJSON
+} from "@simplewebauthn/browser"
