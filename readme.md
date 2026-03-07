@@ -1,13 +1,12 @@
 # PlainKey SDK
 
-TypeScript SDK for passkey authentication. Signu p at [plainkey.io](phttps://plainkey.io)
+TypeScript SDK for passkey authentication. Sign up at [plainkey.io](https://plainkey.io)
 
 ## Packages
 
-- **`@plainkey/browser`** - JavaScript/TypeScript Browser SDK for client-side passkey registration and authentication.
-- **`@plainkey/server`** - JavaScript/TypeScript Server SDK for server-side-only operations.
-- **`@plainkey/types`** - Shared TypeScript types across packages
-- **`@plainkey/vue`** - Vue.js composable (experimental - as of now does not provide any reactivity)
+- **`@plainkey/browser`** - Browser SDK for client-side passkey registration and authentication
+- **`@plainkey/server`** - Server SDK for server-side operations
+- **`@plainkey/vue`** - Vue.js composable wrapping the browser SDK (experimental)
 
 ## Getting started
 
