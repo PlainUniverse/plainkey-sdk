@@ -92,8 +92,7 @@ export class PlainKey {
         body: JSON.stringify({ userName })
       })
 
-      const { userId, options } =
-        await this.parseResponse<BeginUserRegistration200>(beginResponse)
+      const { userId, options } = await this.parseResponse<BeginUserRegistration200>(beginResponse)
 
       // Step 2: Create credential using browser's WebAuthn API
       const credential = await startRegistration({
@@ -189,6 +188,56 @@ export class PlainKey {
   }
 
   /**
+   * Completes a server-initiated passkey registration. Use this when your backend has already called
+   * beginCredentialRegistration() via the Server SDK (or the associated endpoint via REST API), and passed the options and
+   * authenticationToken to the frontend.
+   *
+   * @param authenticationToken - The short-lived token returned alongside the options by beginCredentialRegistration().
+   * @param options - The WebAuthn creation options returned by the server's beginCredentialRegistration().
+   * Do NOT store it in local storage, database, etc. Always keep it in memory.
+   */
+  async completePasskeyRegistration(
+    authenticationToken: string,
+    options: PublicKeyCredentialCreationOptionsJSON
+  ): Promise<AddPasskeyResult> {
+    if (!authenticationToken) throw new Error("Authentication token is required")
+    if (!options) throw new Error("Options are required")
+
+    try {
+      // Step 1: Complete the WebAuthn ceremony using the server-provided options
+      const credential = await startRegistration({ optionsJSON: options })
+
+      // Step 2: Send credential to server for verification
+      const completeResponse = await fetch(`${this.baseUrl}/user/credential/complete`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-project-id": this.projectId
+        },
+        body: JSON.stringify({ authenticationToken, credential })
+      })
+
+      const completeData =
+        await this.parseResponse<CompleteCredentialRegistration200>(completeResponse)
+
+      if (!completeData.success) throw new Error("Server could not complete passkey registration")
+
+      return {
+        success: true,
+        data: {
+          authenticationToken: completeData.authenticationToken,
+          credential: completeData.credential
+        }
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: { message: error instanceof Error ? error.message : "Unknown error" }
+      }
+    }
+  }
+
+  /**
    * Updates a passkey label. Any passkey registered to the user can be updated.
    *
    * @param authenticationToken - The user authentication token, returned from .authenticate() or createUserWithPasskey().
@@ -247,7 +296,8 @@ export class PlainKey {
 
       const beginData = await this.parseResponse<BeginAuthentication200>(beginResponse)
 
-      if (!beginData.options) throw new Error("Server returned no options in authentication begin response")
+      if (!beginData.options)
+        throw new Error("Server returned no options in authentication begin response")
 
       // Step 2: Pass options to the authenticator and wait for response
       const authenticationResponse = await startAuthentication({

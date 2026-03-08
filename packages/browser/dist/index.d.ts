@@ -1,4 +1,4 @@
-import { AuthenticationResponseJSON, PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON, RegistrationResponseJSON } from "@simplewebauthn/browser";
+import { AuthenticationResponseJSON, PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialCreationOptionsJSON as PublicKeyCredentialCreationOptionsJSON$1, PublicKeyCredentialRequestOptionsJSON, RegistrationResponseJSON } from "@simplewebauthn/browser";
 
 //#region src/types.d.ts
 type UserIdentifier = {
@@ -85,6 +85,16 @@ declare class PlainKey {
    * @param userName - A unique identifier for the user. If not provided, the user's stored userName will be used.
    */
   addPasskey(authenticationToken: string, userName?: string): Promise<AddPasskeyResult>;
+  /**
+   * Completes a server-initiated passkey registration. Use this when your backend has already called
+   * beginCredentialRegistration() via the Server SDK (or the associated endpoint via REST API), and passed the options and
+   * authenticationToken to the frontend.
+   *
+   * @param authenticationToken - The short-lived token returned alongside the options by beginCredentialRegistration().
+   * @param options - The WebAuthn creation options returned by the server's beginCredentialRegistration().
+   * Do NOT store it in local storage, database, etc. Always keep it in memory.
+   */
+  completePasskeyRegistration(authenticationToken: string, options: PublicKeyCredentialCreationOptionsJSON$1): Promise<AddPasskeyResult>;
   /**
    * Updates a passkey label. Any passkey registered to the user can be updated.
    *

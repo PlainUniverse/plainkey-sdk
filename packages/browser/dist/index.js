@@ -137,6 +137,47 @@ var PlainKey = class {
 		}
 	}
 	/**
+	* Completes a server-initiated passkey registration. Use this when your backend has already called
+	* beginCredentialRegistration() via the Server SDK (or the associated endpoint via REST API), and passed the options and
+	* authenticationToken to the frontend.
+	*
+	* @param authenticationToken - The short-lived token returned alongside the options by beginCredentialRegistration().
+	* @param options - The WebAuthn creation options returned by the server's beginCredentialRegistration().
+	* Do NOT store it in local storage, database, etc. Always keep it in memory.
+	*/
+	async completePasskeyRegistration(authenticationToken, options) {
+		if (!authenticationToken) throw new Error("Authentication token is required");
+		if (!options) throw new Error("Options are required");
+		try {
+			const credential = await startRegistration({ optionsJSON: options });
+			const completeResponse = await fetch(`${this.baseUrl}/user/credential/complete`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"x-project-id": this.projectId
+				},
+				body: JSON.stringify({
+					authenticationToken,
+					credential
+				})
+			});
+			const completeData = await this.parseResponse(completeResponse);
+			if (!completeData.success) throw new Error("Server could not complete passkey registration");
+			return {
+				success: true,
+				data: {
+					authenticationToken: completeData.authenticationToken,
+					credential: completeData.credential
+				}
+			};
+		} catch (error) {
+			return {
+				success: false,
+				error: { message: error instanceof Error ? error.message : "Unknown error" }
+			};
+		}
+	}
+	/**
 	* Updates a passkey label. Any passkey registered to the user can be updated.
 	*
 	* @param authenticationToken - The user authentication token, returned from .authenticate() or createUserWithPasskey().
