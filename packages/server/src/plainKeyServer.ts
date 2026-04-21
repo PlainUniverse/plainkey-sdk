@@ -1,7 +1,7 @@
 import type {
-  BeginCredentialRegistrationResult,
+  BeginPasskeyRegistrationResult,
   PublicKeyCredentialCreationOptionsJSON,
-  ServerCredential,
+  ServerPasskey,
   UserIdentifier,
   UserInfo,
   UserUpdates,
@@ -254,14 +254,14 @@ export class PlainKeyServer {
     return this.parseResponse<BulkCreateUsers200Item[]>(response)
   }
 
-  // Credentials //
+  // Passkeys //
 
   /**
    * Get all passkeys for a user.
    *
    * @param userId - The PlainKey user ID.
    */
-  async getUserCredentials(userId: string): Promise<ServerCredential[]> {
+  async getUserPasskeys(userId: string): Promise<ServerPasskey[]> {
     const response = await fetch(`${this.baseUrl}/user/${userId}/credentials`, {
       method: "GET",
       headers: await this.defaultRequestHeaders()
@@ -273,10 +273,10 @@ export class PlainKeyServer {
   /**
    * Get a specific passkey by ID.
    *
-   * @param credentialId - The passkey ID.
+   * @param passkeyId - The passkey ID.
    */
-  async getCredential(credentialId: string): Promise<ServerCredential> {
-    const response = await fetch(`${this.baseUrl}/credential/${credentialId}`, {
+  async getPasskey(passkeyId: string): Promise<ServerPasskey> {
+    const response = await fetch(`${this.baseUrl}/credential/${passkeyId}`, {
       method: "GET",
       headers: await this.defaultRequestHeaders()
     })
@@ -287,10 +287,10 @@ export class PlainKeyServer {
   /**
    * Delete a passkey.
    *
-   * @param credentialId - The passkey ID.
+   * @param passkeyId - The passkey ID.
    */
-  async deleteCredential(credentialId: string): Promise<void> {
-    const response = await fetch(`${this.baseUrl}/credential/${credentialId}`, {
+  async deletePasskey(passkeyId: string): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/credential/${passkeyId}`, {
       method: "DELETE",
       headers: await this.defaultRequestHeaders()
     })
@@ -301,11 +301,11 @@ export class PlainKeyServer {
   /**
    * Update the label of a passkey. Pass null to clear the label.
    *
-   * @param credentialId - The passkey ID.
+   * @param passkeyId - The passkey ID.
    * @param label - The new label, or null to clear it.
    */
-  async updateCredentialLabel(credentialId: string, label: string | null): Promise<void> {
-    const response = await fetch(`${this.baseUrl}/credential/${credentialId}/label`, {
+  async updatePasskeyLabel(passkeyId: string, label: string | null): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/credential/${passkeyId}/label`, {
       method: "PATCH",
       headers: await this.defaultRequestHeaders(),
       body: JSON.stringify({ label })
@@ -321,9 +321,9 @@ export class PlainKeyServer {
    *
    * @param userIdentifier - Identify the user by either their PlainKey user ID or userName.
    */
-  async beginCredentialRegistration(
+  async beginPasskeyRegistration(
     userIdentifier: UserIdentifier
-  ): Promise<BeginCredentialRegistrationResult> {
+  ): Promise<BeginPasskeyRegistrationResult> {
     const response = await fetch(`${this.baseUrl}/user/credential/begin`, {
       method: "POST",
       headers: await this.defaultRequestHeaders(),

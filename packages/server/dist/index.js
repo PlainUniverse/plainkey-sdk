@@ -184,7 +184,7 @@ var PlainKeyServer = class {
 	*
 	* @param userId - The PlainKey user ID.
 	*/
-	async getUserCredentials(userId) {
+	async getUserPasskeys(userId) {
 		const response = await fetch(`${this.baseUrl}/user/${userId}/credentials`, {
 			method: "GET",
 			headers: await this.defaultRequestHeaders()
@@ -194,10 +194,10 @@ var PlainKeyServer = class {
 	/**
 	* Get a specific passkey by ID.
 	*
-	* @param credentialId - The passkey ID.
+	* @param passkeyId - The passkey ID.
 	*/
-	async getCredential(credentialId) {
-		const response = await fetch(`${this.baseUrl}/credential/${credentialId}`, {
+	async getPasskey(passkeyId) {
+		const response = await fetch(`${this.baseUrl}/credential/${passkeyId}`, {
 			method: "GET",
 			headers: await this.defaultRequestHeaders()
 		});
@@ -206,10 +206,10 @@ var PlainKeyServer = class {
 	/**
 	* Delete a passkey.
 	*
-	* @param credentialId - The passkey ID.
+	* @param passkeyId - The passkey ID.
 	*/
-	async deleteCredential(credentialId) {
-		const response = await fetch(`${this.baseUrl}/credential/${credentialId}`, {
+	async deletePasskey(passkeyId) {
+		const response = await fetch(`${this.baseUrl}/credential/${passkeyId}`, {
 			method: "DELETE",
 			headers: await this.defaultRequestHeaders()
 		});
@@ -218,11 +218,11 @@ var PlainKeyServer = class {
 	/**
 	* Update the label of a passkey. Pass null to clear the label.
 	*
-	* @param credentialId - The passkey ID.
+	* @param passkeyId - The passkey ID.
 	* @param label - The new label, or null to clear it.
 	*/
-	async updateCredentialLabel(credentialId, label) {
-		const response = await fetch(`${this.baseUrl}/credential/${credentialId}/label`, {
+	async updatePasskeyLabel(passkeyId, label) {
+		const response = await fetch(`${this.baseUrl}/credential/${passkeyId}/label`, {
 			method: "PATCH",
 			headers: await this.defaultRequestHeaders(),
 			body: JSON.stringify({ label })
@@ -236,7 +236,7 @@ var PlainKeyServer = class {
 	*
 	* @param userIdentifier - Identify the user by either their PlainKey user ID or userName.
 	*/
-	async beginCredentialRegistration(userIdentifier) {
+	async beginPasskeyRegistration(userIdentifier) {
 		const response = await fetch(`${this.baseUrl}/user/credential/begin`, {
 			method: "POST",
 			headers: await this.defaultRequestHeaders(),

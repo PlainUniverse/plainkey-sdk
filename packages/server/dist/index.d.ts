@@ -30,7 +30,7 @@ type UserInfo = {
 type UserUpdates = {
   userName?: string | null;
 };
-type ServerCredential = GetCredential200;
+type ServerPasskey = GetCredential200;
 type VerifyAuthenticationTokenResult = {
   success: boolean;
   data?: {
@@ -40,7 +40,7 @@ type VerifyAuthenticationTokenResult = {
     message: string;
   };
 };
-type BeginCredentialRegistrationResult = {
+type BeginPasskeyRegistrationResult = {
   /** WebAuthn creation options — pass these to your frontend to complete the passkey ceremony. */
   options: PublicKeyCredentialCreationOptionsJSON;
   /** Short-lived token — pass this to your frontend alongside the options. */
@@ -127,26 +127,26 @@ declare class PlainKeyServer {
    *
    * @param userId - The PlainKey user ID.
    */
-  getUserCredentials(userId: string): Promise<ServerCredential[]>;
+  getUserPasskeys(userId: string): Promise<ServerPasskey[]>;
   /**
    * Get a specific passkey by ID.
    *
-   * @param credentialId - The passkey ID.
+   * @param passkeyId - The passkey ID.
    */
-  getCredential(credentialId: string): Promise<ServerCredential>;
+  getPasskey(passkeyId: string): Promise<ServerPasskey>;
   /**
    * Delete a passkey.
    *
-   * @param credentialId - The passkey ID.
+   * @param passkeyId - The passkey ID.
    */
-  deleteCredential(credentialId: string): Promise<void>;
+  deletePasskey(passkeyId: string): Promise<void>;
   /**
    * Update the label of a passkey. Pass null to clear the label.
    *
-   * @param credentialId - The passkey ID.
+   * @param passkeyId - The passkey ID.
    * @param label - The new label, or null to clear it.
    */
-  updateCredentialLabel(credentialId: string, label: string | null): Promise<void>;
+  updatePasskeyLabel(passkeyId: string, label: string | null): Promise<void>;
   /**
    * Begin a passkey registration ceremony for an existing user, initiated from your backend.
    * Returns WebAuthn options and a short-lived authenticationToken — pass both to the browser
@@ -154,8 +154,8 @@ declare class PlainKeyServer {
    *
    * @param userIdentifier - Identify the user by either their PlainKey user ID or userName.
    */
-  beginCredentialRegistration(userIdentifier: UserIdentifier): Promise<BeginCredentialRegistrationResult>;
+  beginPasskeyRegistration(userIdentifier: UserIdentifier): Promise<BeginPasskeyRegistrationResult>;
 }
 //#endregion
-export { BeginCredentialRegistrationResult, PlainKeyServer, type PublicKeyCredentialCreationOptionsJSON$1 as PublicKeyCredentialCreationOptionsJSON, ServerCredential, UserIdentifier, UserInfo, UserUpdates, VerifyAuthenticationTokenResult };
+export { BeginPasskeyRegistrationResult, PlainKeyServer, type PublicKeyCredentialCreationOptionsJSON$1 as PublicKeyCredentialCreationOptionsJSON, ServerPasskey, UserIdentifier, UserInfo, UserUpdates, VerifyAuthenticationTokenResult };
 //# sourceMappingURL=index.d.ts.map

@@ -18,8 +18,14 @@ Monorepo containing all PlainKey SDK packages. Public, customer-facing. DX is to
 
 ## Publishing
 - All packages have `"publishConfig": { "access": "public" }`
-- All packages are always published together at the same version, even if a package has no changes. Keeps things simple.
-- After finishing work on the SDK, always bump the version in all package.json files (browser, server, vue), then run `npm install` from the monorepo root (it's a workspace — this wires up inter-package dependencies), then `npm run build` to rebuild all in the correct order.
+- Only bump the version of packages that have actually changed — no need to bump all together.
+- **Dependency rule:** `@plainkey/vue` depends on `@plainkey/browser`. If browser changes, bump both browser and vue, and update the `@plainkey/browser` version reference in `packages/vue/package.json`.
+- `@plainkey/server` is fully independent — bump only when it has changes.
+- Workflow for any changed package:
+  1. Bump version in the relevant `package.json` file(s)
+  2. `npm install` from monorepo root (re-wires workspace inter-package deps)
+  3. Build the changed package(s): `npm run build -w @plainkey/<package>`
+  4. Publish: `npm run publish:<package>` from root (e.g. `npm run publish:browser`)
 
 ## Critical Rule
 Never write SDK methods, types, params, or result objects without first reading the corresponding endpoint in `plainkey-backend/src/routes/` and its associated request/response schemas in `plainkey-backend/src/schema/requests.ts` and `src/schema/responses.ts`. The SDK must exactly match what the backend expects and returns.
